@@ -2,46 +2,38 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { IConversation } from '@/models/Conversation';
 
-interface Conversation {
-  id: string;
-  title: string;
-  date: string;
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+  conversations: IConversation[];
+  currentConversationId: string | null;
+  onSelectConversation: (id: string) => void;
+  onDeleteConversation: (id: string) => void;
 }
 
-export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const searchParams = useSearchParams();
-  const currentId = searchParams.get('id');
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-
-  useEffect(() => {
-    const savedConversations = localStorage.getItem('conversations');
-    if (savedConversations) {
-      setConversations(JSON.parse(savedConversations));
-    }
-  }, []);
-
+export default function Sidebar({ 
+  isOpen, 
+  onClose, 
+  conversations, 
+  currentConversationId,
+  onSelectConversation,
+  onDeleteConversation 
+}: SidebarProps) {
   const handleNewChat = () => {
-    const newId = new Date().toISOString();
-    window.location.href = `/?id=${newId}`;
+    onSelectConversation('');
     onClose();
   };
 
   const handleSelectConversation = (id: string) => {
-    window.location.href = `/?id=${id}`;
+    onSelectConversation(id);
     onClose();
   };
 
-  const handleDeleteConversation = (e: React.MouseEvent, id: string) => {
+  const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    const updatedConversations = conversations.filter(conv => conv.id !== id);
-    setConversations(updatedConversations);
-    localStorage.setItem('conversations', JSON.stringify(updatedConversations));
-    localStorage.removeItem(`chat_${id}`);
-    
-    if (currentId === id) {
-      window.location.href = '/';
-    }
+    await onDeleteConversation(id);
   };
 
   return (
@@ -58,7 +50,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
         <div className="p-2">
           <button 
             onClick={handleNewChat}
-            className="w-full flex items-center gap-3 p-3 border border-white/20 rounded-md hover:bg-gray-500/10 transition-colors text-white"
+            className="w-full flex items-center gap-3 p-3 text-white border border-white/20 rounded-md hover:bg-gray-500/10 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -69,11 +61,11 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
 
         <div className="flex-1 overflow-y-auto p-2">
           {conversations.map((conv) => (
-            <div key={conv.id} className="group relative">
+            <div key={conv._id} className="group relative">
               <button
-                onClick={() => handleSelectConversation(conv.id)}
+                onClick={() => handleSelectConversation(conv._id)}
                 className={`w-full flex items-center gap-3 p-3 pr-8 rounded-md text-sm transition-colors text-left ${
-                  currentId === conv.id 
+                  currentConversationId === conv._id 
                     ? 'bg-gray-800 text-white' 
                     : 'text-gray-300 hover:bg-gray-500/10'
                 }`}
@@ -84,7 +76,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
                 <span className="truncate flex-1">{conv.title}</span>
               </button>
               <button
-                onClick={(e) => handleDeleteConversation(e, conv.id)}
+                onClick={(e) => handleDeleteConversation(e, conv._id)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-gray-700/50 text-gray-300 transition-all"
                 title="Supprimer la conversation"
               >

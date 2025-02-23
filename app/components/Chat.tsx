@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MarkdownRenderer from './MarkdownRenderer';
-import Image from 'next/image';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -58,7 +57,7 @@ export default function Chat() {
         JSON.stringify(messages)
       );
 
-      // Sauvegarder le titre de la conversation
+      
       const title = messages[0].content.slice(0, 30) + '...';
       const conversation: Conversation = {
         id: currentConversationId,
@@ -124,15 +123,15 @@ export default function Chat() {
     const textarea = e.target;
     setInput(textarea.value);
     
-    // Réinitialiser la hauteur
+    
     textarea.style.height = 'auto';
-    // Définir la nouvelle hauteur basée sur le contenu
+    
     textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
   };
 
   return (
     <div className="relative flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto custom-scrollbar pb-36">
         {messages.length === 0 && (
           <div className="text-center py-10">
             <h1 className="text-4xl font-semibold text-gray-200 mb-10">Chat Mistral AI</h1>
@@ -141,7 +140,22 @@ export default function Chat() {
             </div>
           </div>
         )}
-        <div className="pb-32">
+        <style jsx>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.3);
+            border-radius: 20px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(156, 163, 175, 0.5);
+          }
+        `}</style>
+        <div className="pb-4">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -188,7 +202,7 @@ export default function Chat() {
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className="absolute bottom-0 inset-x-0">
+      <div className="absolute bottom-0 inset-x-0 z-10">
         <div className="bg-gradient-to-t from-[#343541] via-[#343541]/90 to-transparent h-12"></div>
         <div className="bg-[#343541]">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">

@@ -34,7 +34,6 @@ const userSchema = new Schema({
   }
 });
 
-// Middleware pour mettre à jour updatedAt avant chaque sauvegarde
 userSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();

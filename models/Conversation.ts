@@ -37,7 +37,6 @@ const conversationSchema = new Schema({
   }
 });
 
-// Middleware pour mettre à jour updatedAt avant chaque sauvegarde
 conversationSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();

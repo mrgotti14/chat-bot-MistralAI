@@ -35,7 +35,6 @@ export async function POST(request: Request) {
       createdAt: new Date()
     };
 
-    // Appel à l'API Mistral
     const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -66,7 +65,6 @@ export async function POST(request: Request) {
       createdAt: new Date()
     };
 
-    // Sauvegarder dans MongoDB avec Mongoose
     let resultConversationId;
     if (existingConversationId) {
       const conversation = await Conversation.findOne({

@@ -97,10 +97,12 @@ The project is in beta with:
 - [Mistral AI API](https://mistral.ai/)
 - [React Markdown](https://github.com/remarkjs/react-markdown)
 - [NextAuth.js](https://next-auth.js.org/) - Authentication
+- [Docker](https://www.docker.com/) - Containerization and development environment
 
 ## 📋 Prerequisites
 
 - Node.js 18.17 or later
+- Docker and Docker Compose
 - A Mistral AI API key
 - MongoDB database (local or MongoDB Atlas)
 

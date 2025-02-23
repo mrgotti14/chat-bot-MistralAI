@@ -1,43 +1,52 @@
-let mongoose: any;
-
-declare global {
-  var mongoose: { conn: any; promise: any } | undefined;
-}
+import mongoose from 'mongoose';
+import { MongoClient } from 'mongodb';
 
 if (!process.env.MONGODB_URI) {
-  throw new Error('Veuillez définir la variable d\'environnement MONGODB_URI');
+  throw new Error('Veuillez définir la variable d&apos;environnement MONGODB_URI');
 }
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-let cached = global.mongoose || { conn: null, promise: null };
+interface GlobalWithMongoose {
+  mongoose: {
+    conn: typeof mongoose | null;
+    promise: Promise<typeof mongoose> | null;
+  };
+}
+
+declare const global: GlobalWithMongoose;
 
 if (!global.mongoose) {
   global.mongoose = { conn: null, promise: null };
 }
 
 async function dbConnect() {
-  if (cached.conn) {
-    return cached.conn;
+  if (global.mongoose.conn) {
+    return global.mongoose.conn;
   }
 
-  if (!cached.promise) {
-    const opts = {
+  if (!global.mongoose.promise) {
+    global.mongoose.promise = mongoose.connect(MONGODB_URI, {
       bufferCommands: true,
-    };
-
-    mongoose = (await import('mongoose')).default;
-    cached.promise = mongoose.connect(MONGODB_URI, opts);
+    });
   }
 
   try {
-    cached.conn = await cached.promise;
+    global.mongoose.conn = await global.mongoose.promise;
   } catch (e) {
-    cached.promise = null;
+    global.mongoose.promise = null;
     throw e;
   }
 
-  return cached.conn;
+  return global.mongoose.conn;
 }
 
+// Pour NextAuth
+const clientPromise = (async () => {
+  await dbConnect();
+  const client = new MongoClient(MONGODB_URI);
+  return client.connect();
+})();
+
+export { clientPromise };
 export default dbConnect; 

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
-import { authOptions } from '../[...nextauth]/route';
+import { authOptions } from '../[...nextauth]/auth-options';
 
 export async function POST(request: Request) {
   try {

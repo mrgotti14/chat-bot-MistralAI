@@ -11,7 +11,6 @@ const nextConfig = {
   experimental: {
     turbo: {
       resolveAlias: {
-        // Rediriger les modules problématiques vers des alternatives ou des stubs vides
         'mongodb-client-encryption': require.resolve('path'),
         'aws4': require.resolve('path')
       },

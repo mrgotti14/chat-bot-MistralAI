@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chat Mistral AI
 
-## Getting Started
+Une interface de chat moderne et élégante pour interagir avec l'API Mistral AI, construite avec Next.js et Tailwind CSS.
 
-First, run the development server:
+## 🌟 Fonctionnalités
 
+- 💬 Interface de chat intuitive inspirée de ChatGPT
+- 📝 Support complet du Markdown avec syntaxe highlighting
+- 💾 Sauvegarde automatique des conversations (actuellement en localStorage)
+- 🔄 Historique des conversations
+- 📱 Interface responsive (mobile et desktop)
+- 🎨 Thème sombre élégant
+- ⌨️ Raccourcis clavier pour une meilleure productivité
+
+## 🗺️ Roadmap
+
+### Authentification & Stockage
+- [ ] Système d'authentification simple (email/password)
+- [ ] Base de données MongoDB pour le stockage
+- [ ] Migration des conversations du localStorage vers la DB
+- [ ] Gestion des sessions utilisateur
+
+### Améliorations UX
+- [ ] Gestion du contexte des conversations
+- [ ] Possibilité de nommer les conversations
+- [ ] Recherche dans l'historique des conversations
+- [ ] Amélioration des performances
+
+## État Actuel
+
+Le projet est actuellement en version alpha avec :
+- Stockage local (localStorage) pour les conversations
+- Pas de système d'authentification
+- Pas de persistance côté serveur
+- Pas de gestion de contexte dans les conversations
+
+Ces limitations seront adressées dans les prochaines versions selon la roadmap ci-dessus.
+
+## 🛠️ Technologies Utilisées
+
+- [Next.js 14](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [API Mistral AI](https://mistral.ai/)
+- [React Markdown](https://github.com/remarkjs/react-markdown)
+
+## 📋 Prérequis
+
+- Node.js 18.17 ou plus récent
+- Une clé API Mistral AI
+
+## 🚀 Installation
+
+1. Clonez le repository :
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/mrgotti14/chat-bot-MistralAI.git
+cd chat-bot-MistralAI
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Installez les dépendances :
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Créez un fichier `.env.local` à la racine du projet :
+```env
+MISTRAL_API_KEY=votre_clé_api_mistral
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Lancez le serveur de développement :
+```bash
+npm run dev
+```
 
-## Learn More
+5. Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 
-To learn more about Next.js, take a look at the following resources:
+## 💡 Utilisation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Écrivez votre message dans la zone de texte en bas
+- Appuyez sur Entrée pour envoyer (Maj+Entrée pour un saut de ligne)
+- Les conversations sont automatiquement sauvegardées
+- Accédez à l'historique via la barre latérale
+- Support complet du Markdown dans les messages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🤝 Contribution
 
-## Deploy on Vercel
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou un pull request.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 Licence
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

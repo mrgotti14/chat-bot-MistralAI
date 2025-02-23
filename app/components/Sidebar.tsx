@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+
 import { IConversation } from '@/models/Conversation';
 import { signOut } from 'next-auth/react';
 

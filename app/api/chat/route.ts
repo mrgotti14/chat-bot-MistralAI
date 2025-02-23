@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import dbConnect from '@/lib/mongoose';
 import Conversation from '@/models/Conversation';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { authOptions } from '../auth/[...nextauth]/auth-options';
 
 if (!process.env.MISTRAL_API_KEY) {
   throw new Error('La clé API Mistral est manquante');

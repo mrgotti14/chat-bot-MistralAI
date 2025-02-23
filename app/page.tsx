@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function Home() {
     }
   }, [status, router]);
 
-  // Afficher un écran de chargement pendant la vérification de la session
+
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-[#343541] flex items-center justify-center">
@@ -24,7 +24,7 @@ export default function Home() {
     );
   }
 
-  // Si l'utilisateur n'est pas connecté, afficher la landing page
+
   return (
     <div className="min-h-screen bg-[#343541]">
       {/* Hero Section */}
@@ -35,8 +35,8 @@ export default function Home() {
               Chat Mistral AI
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300">
-              Une interface moderne et élégante pour interagir avec l'API Mistral AI.
-              Profitez d'une expérience de chat avancée avec support du markdown et historique des conversations.
+              Une interface moderne et élégante pour interagir avec l&apos;API Mistral AI.
+              Profitez d&apos;une expérience de chat avancée avec support du markdown et historique des conversations.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
@@ -62,7 +62,7 @@ export default function Home() {
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2 className="text-base font-semibold leading-7 text-blue-400">Chat IA Avancé</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Tout ce dont vous avez besoin pour discuter avec l'IA
+              Tout ce dont vous avez besoin pour discuter avec l&apos;IA
             </p>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">

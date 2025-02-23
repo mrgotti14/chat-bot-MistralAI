@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
 import MarkdownRenderer from './MarkdownRenderer';
-import Conversation, { type IConversation, type IMessage } from '@/models/Conversation';
+import  { type IConversation, type IMessage } from '@/models/Conversation';
 
 interface ChatProps {
   conversations: IConversation[];
@@ -56,7 +55,7 @@ export default function Chat({
         })
       });
 
-      if (!response.ok) throw new Error('Erreur lors de l\'envoi du message');
+      if (!response.ok) throw new Error('Erreur lors de l&apos;envoi du message');
       
       const data = await response.json();
       
@@ -80,7 +79,7 @@ export default function Chat({
     return conversations.find(conv => conv._id === currentConversationId);
   };
 
-  // Obtenir tous les messages de la conversation actuelle
+
   const currentMessages = getCurrentConversation()?.messages || [];
 
   return (
@@ -90,7 +89,7 @@ export default function Chat({
           <div className="text-center py-10">
             <h1 className="text-4xl font-semibold text-gray-200 mb-10">Chat Mistral AI</h1>
             <div className="text-gray-400">
-              <p className="text-lg mb-8">Comment puis-je vous aider aujourd'hui ?</p>
+              <p className="text-lg mb-8">Comment puis-je vous aider aujourd&apos;hui ?</p>
             </div>
           </div>
         )}

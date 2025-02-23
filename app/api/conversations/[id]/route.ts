@@ -1,15 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import dbConnect from '@/lib/mongoose';
 import Conversation from '@/models/Conversation';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '../../auth/[...nextauth]/auth-options';
+
+type Props = {
+  params: Promise<{ id: string }>
+}
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: Props
 ) {
   try {
     const session = await getServerSession(authOptions);
+    const { id } = await params;
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -20,7 +25,7 @@ export async function GET(
 
     await dbConnect();
     const conversation = await Conversation.findOne({
-      _id: params.id,
+      _id: id,
       userId: session.user.id
     }).exec();
     
@@ -42,11 +47,12 @@ export async function GET(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: Props
 ) {
   try {
     const session = await getServerSession(authOptions);
+    const { id } = await params;
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -57,7 +63,7 @@ export async function DELETE(
 
     await dbConnect();
     const conversation = await Conversation.findOneAndDelete({
-      _id: params.id,
+      _id: id,
       userId: session.user.id
     }).exec();
     
@@ -76,4 +82,6 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}
+
+export const dynamic = 'force-dynamic'; 

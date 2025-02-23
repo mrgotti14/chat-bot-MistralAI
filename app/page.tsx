@@ -1,16 +1,58 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Chat from './components/Chat';
 import Sidebar from './components/Sidebar';
+import { IConversation } from '@/models/Conversation';
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [conversations, setConversations] = useState<IConversation[]>([]);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+
+  const loadConversations = async () => {
+    try {
+      const response = await fetch('/api/conversations');
+      if (!response.ok) throw new Error('Erreur lors du chargement des conversations');
+      const data = await response.json();
+      setConversations(data);
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadConversations();
+  }, []);
+
+  const handleDeleteConversation = async (id: string) => {
+    try {
+      const response = await fetch(`/api/conversations/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) throw new Error('Erreur lors de la suppression');
+      
+      await loadConversations();
+      if (currentConversationId === id) {
+        setCurrentConversationId(null);
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
 
   return (
-    <main className="flex h-screen">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      <div className="flex-1 flex flex-col bg-[#343541]">
+    <main className="flex h-screen bg-[#343541]">
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)}
+        conversations={conversations}
+        currentConversationId={currentConversationId}
+        onSelectConversation={setCurrentConversationId}
+        onDeleteConversation={handleDeleteConversation}
+      />
+      <div className="flex-1 flex flex-col">
         <div className="md:hidden p-2">
           <button
             onClick={() => setIsSidebarOpen(true)}
@@ -22,7 +64,12 @@ export default function Home() {
           </button>
         </div>
         <div className="flex-1 overflow-hidden">
-          <Chat />
+          <Chat 
+            conversations={conversations}
+            currentConversationId={currentConversationId}
+            onConversationUpdate={loadConversations}
+            onSelectConversation={setCurrentConversationId}
+          />
         </div>
       </div>
     </main>

@@ -3,28 +3,25 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MarkdownRenderer from './MarkdownRenderer';
+import Conversation, { type IConversation, type IMessage } from '@/models/Conversation';
 
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
+interface ChatProps {
+  conversations: IConversation[];
+  currentConversationId: string | null;
+  onConversationUpdate: () => Promise<void>;
+  onSelectConversation: (id: string) => void;
 }
 
-interface Conversation {
-  id: string;
-  messages: Message[];
-  title: string;
-  date: string;
-}
-
-export default function Chat() {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const searchParams = useSearchParams();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
+export default function Chat({ 
+  conversations,
+  currentConversationId,
+  onConversationUpdate,
+  onSelectConversation
+}: ChatProps) {
+  const [message, setMessage] = useState('');
+  const [pendingMessage, setPendingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentConversationId, setCurrentConversationId] = useState<string>(
-    searchParams.get('id') || new Date().toISOString()
-  );
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,107 +29,64 @@ export default function Chat() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
-    const conversationId = searchParams.get('id');
-    if (conversationId) {
-      setCurrentConversationId(conversationId);
-      const savedMessages = localStorage.getItem(`chat_${conversationId}`);
-      if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
-      } else {
-        setMessages([]);
-      }
-    } else {
-      setMessages([]);
-      setCurrentConversationId(new Date().toISOString());
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem(
-        `chat_${currentConversationId}`,
-        JSON.stringify(messages)
-      );
-
-      
-      const title = messages[0].content.slice(0, 30) + '...';
-      const conversation: Conversation = {
-        id: currentConversationId,
-        messages,
-        title,
-        date: new Date().toISOString().split('T')[0],
-      };
-      const conversations = JSON.parse(localStorage.getItem('conversations') || '[]');
-      const existingIndex = conversations.findIndex(
-        (c: Conversation) => c.id === currentConversationId
-      );
-
-      if (existingIndex >= 0) {
-        conversations[existingIndex] = conversation;
-      } else {
-        conversations.unshift(conversation);
-      }
-
-      localStorage.setItem('conversations', JSON.stringify(conversations));
-    }
-  }, [messages, currentConversationId]);
+  }, [conversations]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!message.trim()) return;
 
-    const userMessage: Message = {
-      role: 'user',
-      content: input
-    };
+    const messageToSend = message.trim();
+    setPendingMessage(messageToSend);
+    setMessage('');
+    const textarea = e.target as HTMLFormElement;
+    const textareaElement = textarea.querySelector('textarea');
+    if (textareaElement) {
+      textareaElement.style.height = '44px';
+    }
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
     setIsLoading(true);
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          message: input
-        }),
+          message: messageToSend,
+          conversationId: currentConversationId 
+        })
       });
 
+      if (!response.ok) throw new Error('Erreur lors de l\'envoi du message');
+      
       const data = await response.json();
       
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: data.response
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
+      // Si c'est une nouvelle conversation, on met à jour l'ID immédiatement
+      if (!currentConversationId && data.conversationId) {
+        onSelectConversation(data.conversationId);
+      }
+      
+      // Puis on met à jour la liste des conversations
+      await onConversationUpdate();
     } catch (error) {
-      console.error('Erreur lors de l\'envoi du message:', error);
+      console.error('Erreur:', error);
     } finally {
       setIsLoading(false);
+      setPendingMessage('');
     }
   };
 
-  const handleTextareaInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const textarea = e.target;
-    setInput(textarea.value);
-    
-    
-    textarea.style.height = 'auto';
-    
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
+  const getCurrentConversation = () => {
+    if (!currentConversationId) return null;
+    return conversations.find(conv => conv._id === currentConversationId);
   };
+
+  // Obtenir tous les messages de la conversation actuelle
+  const currentMessages = getCurrentConversation()?.messages || [];
 
   return (
     <div className="relative flex flex-col h-full">
       <div className="flex-1 overflow-y-auto custom-scrollbar pb-36">
-        {messages.length === 0 && (
+        {(!currentConversationId || conversations.length === 0) && (
           <div className="text-center py-10">
             <h1 className="text-4xl font-semibold text-gray-200 mb-10">Chat Mistral AI</h1>
             <div className="text-gray-400">
@@ -156,16 +110,16 @@ export default function Chat() {
           }
         `}</style>
         <div className="pb-4">
-          {messages.map((message, index) => (
+          {currentMessages.map((msg: IMessage, index: number) => (
             <div
               key={index}
               className="py-4"
             >
               <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                {message.role === 'user' ? (
+                {msg.role === 'user' ? (
                   <div className="flex justify-end">
                     <div className="bg-blue-600 rounded-2xl px-4 py-2 max-w-[85%]">
-                      <MarkdownRenderer content={message.content} />
+                      <MarkdownRenderer content={msg.content} />
                     </div>
                   </div>
                 ) : (
@@ -174,7 +128,7 @@ export default function Chat() {
                       <span className="text-white text-sm font-medium">M</span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <MarkdownRenderer content={message.content} />
+                      <MarkdownRenderer content={msg.content} />
                     </div>
                   </div>
                 )}
@@ -182,22 +136,33 @@ export default function Chat() {
             </div>
           ))}
           {isLoading && (
-            <div className="py-4">
-              <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex gap-4 lg:gap-6">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">M</span>
-                  </div>
-                  <div className="flex-1 flex items-center">
-                    <div className="flex gap-2">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+            <>
+              <div className="py-4">
+                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex justify-end">
+                    <div className="bg-blue-600 rounded-2xl px-4 py-2 max-w-[85%]">
+                      <MarkdownRenderer content={pendingMessage} />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+              <div className="py-4">
+                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex gap-4 lg:gap-6">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center">
+                      <span className="text-white text-sm font-medium">M</span>
+                    </div>
+                    <div className="flex-1 flex items-center">
+                      <div className="flex gap-2">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
           <div ref={messagesEndRef} />
         </div>
@@ -210,8 +175,12 @@ export default function Chat() {
               <div className="flex items-end">
                 <div className="relative flex-1">
                   <textarea
-                    value={input}
-                    onChange={handleTextareaInput}
+                    value={message}
+                    onChange={(e) => {
+                      setMessage(e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`;
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -231,7 +200,7 @@ export default function Chat() {
                   <div className="absolute right-2 bottom-2">
                     <button
                       type="submit"
-                      disabled={isLoading || !input.trim()}
+                      disabled={isLoading || !message.trim()}
                       className="p-2 text-gray-400 hover:text-gray-200 disabled:hover:text-gray-400 disabled:opacity-40 transition-colors"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">

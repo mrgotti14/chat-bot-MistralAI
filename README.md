@@ -38,7 +38,7 @@ Ces limitations seront adressées dans les prochaines versions selon la roadmap 
 
 ## 🛠️ Technologies Utilisées
 
-- [Next.js 14](https://nextjs.org/)
+- [Next.js 15](https://nextjs.org/)
 - [React](https://reactjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [API Mistral AI](https://mistral.ai/)

@@ -11,6 +11,11 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
 - 📱 Responsive interface (mobile and desktop)
 - 🎨 Elegant dark theme
 - ⌨️ Keyboard shortcuts for better productivity
+- 🔐 Authentication system with multiple providers:
+  - Email/Password authentication
+  - Google OAuth integration
+  - Automatic password setup for Google users
+  - Seamless account linking between providers
 
 ## 🗺️ Roadmap
 
@@ -18,8 +23,8 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
 - [x] MongoDB database for storage
 - [x] Simple authentication system (email/password)
 - [x] User session management
-- [ ] OAuth integration
-  - [ ] Google authentication
+- [x] OAuth integration
+  - [x] Google authentication
   - [ ] GitHub authentication
 - [ ] User profile management
 - [ ] API key management
@@ -56,17 +61,22 @@ The project is in beta with:
 - ✅ MongoDB storage for conversations
 - ✅ REST API for conversation management
 - ✅ User interface synchronized with database
-- ✅ Authentication system implemented
+- ✅ Authentication system with multiple providers
 - ❌ No context management in conversations
 
 ## 🔄 Recent Updates
 
 ### Authentication & User Management
-- Added NextAuth.js integration with credentials provider
+- Added NextAuth.js integration with multiple providers:
+  - Credentials provider for email/password
+  - Google OAuth provider with automatic account linking
+  - Smart password management for Google users
 - Implemented user registration and login system
 - Added session management and protected routes
 - Created login and registration pages with form validation
 - Secured API routes with session checks
+- Added automatic password setup for Google users
+- Implemented seamless account linking between providers
 
 ### Database & Storage
 - Set up MongoDB with Docker for local development
@@ -105,6 +115,7 @@ The project is in beta with:
 - Docker and Docker Compose
 - A Mistral AI API key
 - MongoDB database (local or MongoDB Atlas)
+- Google OAuth credentials
 
 ## 🚀 Installation
 
@@ -114,12 +125,32 @@ git clone https://github.com/mrgotti14/chat-bot-MistralAI.git
 cd chat-bot-MistralAI
 ```
 
-2. Install dependencies:
+2. Start MongoDB database with Docker:
+```bash
+# Start MongoDB and Mongo Express containers in background
+docker-compose up -d
+
+# Check if containers are running
+docker-compose ps
+
+# View container logs
+docker-compose logs -f
+
+# Stop containers
+docker-compose down
+
+# Remove containers and volumes (⚠️ Warning: this will delete all data)
+docker-compose down -v
+```
+
+> Note: MongoDB will be available at `localhost:27017` and Mongo Express at `http://localhost:8081`
+
+3. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Create a `.env.local` file in the root directory:
+4. Create a `.env.local` file in the root directory:
 ```env
 # API Keys
 MISTRAL_API_KEY=your_mistral_api_key
@@ -130,21 +161,18 @@ MONGODB_URI=your_mongodb_uri
 # Authentication
 NEXTAUTH_SECRET=your_generated_secret_key
 NEXTAUTH_URL=http://localhost:3000
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
 
-> Note: For development with Docker, use this MongoDB URI:
-> ```
-> mongodb://admin:password123@localhost:27017/chat-mistral?authSource=admin
-> ```
->
-> MongoDB Express interface is available at http://localhost:8081
-
-4. Start the development server:
+5. Start the development server:
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 💡 Usage
 
@@ -154,6 +182,8 @@ npm run dev
 - Access history through the sidebar
 - Delete conversations by hovering over their title in the sidebar
 - Full Markdown support in messages
+- Connect with Google or email/password
+- First-time Google users will be prompted to set a password
 
 ## 🤝 Contributing
 

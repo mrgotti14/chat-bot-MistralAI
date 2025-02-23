@@ -4,7 +4,9 @@ export interface IUser {
   _id: string;
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  image?: string;
+  emailVerified?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,7 +24,15 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: true
+    required: false
+  },
+  image: {
+    type: String,
+    required: false
+  },
+  emailVerified: {
+    type: Date,
+    required: false
   },
   createdAt: {
     type: Date,

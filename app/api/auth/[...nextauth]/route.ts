@@ -1,5 +1,6 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
 import clientPromise from "@/lib/mongodb";
@@ -20,6 +21,11 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -39,6 +45,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Aucun utilisateur trouvé avec cet email');
         }
 
+        if (!user.password) {
+          throw new Error('Veuillez vous connecter avec Google');
+        }
+
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
           user.password
@@ -51,33 +61,56 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user._id.toString(),
           email: user.email,
-          name: user.name
+          name: user.name,
+          image: user.image
         };
       }
     })
   ],
-  session: {
-    strategy: "jwt" as const
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: '/auth/login'
-  },
   callbacks: {
-    async jwt({ token, user }: { token: any; user: any }) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        try {
+          await dbConnect();
+          const existingUser = await User.findOne({ email: user.email });
+          
+          if (existingUser) {
+            // Mettre à jour les informations Google si nécessaire
+            existingUser.name = user.name;
+            existingUser.image = user.image;
+            await existingUser.save();
+          }
+        } catch (error) {
+          console.error("Erreur lors de la vérification de l'utilisateur:", error);
+          return false;
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
       }
       return token;
     },
-    session: ({ session, token }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: token.sub
-      }
-    })
-  }
+    async session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.sub
+        }
+      };
+    }
+  },
+  pages: {
+    signIn: '/auth/login',
+    error: '/auth/login'
+  },
+  session: {
+    strategy: "jwt"
+  },
+  secret: process.env.NEXTAUTH_SECRET
 };
 
 const handler = NextAuth(authOptions);

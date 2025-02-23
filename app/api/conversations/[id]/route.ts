@@ -1,14 +1,28 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
 import dbConnect from '@/lib/mongoose';
 import Conversation from '@/models/Conversation';
+import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Non autorisé' },
+        { status: 401 }
+      );
+    }
+
     await dbConnect();
-    const conversation = await Conversation.findById(params.id).exec();
+    const conversation = await Conversation.findOne({
+      _id: params.id,
+      userId: session.user.id
+    }).exec();
     
     if (!conversation) {
       return NextResponse.json(
@@ -32,8 +46,20 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Non autorisé' },
+        { status: 401 }
+      );
+    }
+
     await dbConnect();
-    const conversation = await Conversation.findByIdAndDelete(params.id).exec();
+    const conversation = await Conversation.findOneAndDelete({
+      _id: params.id,
+      userId: session.user.id
+    }).exec();
     
     if (!conversation) {
       return NextResponse.json(

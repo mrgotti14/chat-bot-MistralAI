@@ -1,11 +1,35 @@
 'use client';
 
+/**
+ * Props for the Modal component
+ * @interface ModalProps
+ * 
+ * @property {boolean} isOpen - Controls modal visibility
+ * @property {() => void} onClose - Function called to close the modal
+ * @property {React.ReactNode} children - Content to display inside the modal
+ */
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
 }
 
+/**
+ * Reusable Modal component with backdrop and animation
+ * 
+ * @component
+ * @param {ModalProps} props - Component props
+ * @returns {JSX.Element|null} The modal or null if isOpen is false
+ * 
+ * @example
+ * ```tsx
+ * <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+ *   <div className="p-4">
+ *     <h2>Modal Content</h2>
+ *   </div>
+ * </Modal>
+ * ```
+ */
 export default function Modal({ isOpen, onClose, children }: ModalProps) {
   if (!isOpen) return null;
 

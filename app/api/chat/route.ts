@@ -5,16 +5,32 @@ import Conversation from '@/models/Conversation';
 import { authOptions } from '../auth/[...nextauth]/auth-options';
 
 if (!process.env.MISTRAL_API_KEY) {
-  throw new Error('La clé API Mistral est manquante');
+  throw new Error('Missing Mistral API key');
 }
 
+/**
+ * Chat API endpoint for message processing
+ * @route POST /api/chat
+ * 
+ * Request body:
+ * ```json
+ * {
+ *   "message": "User's message",
+ *   "conversationId": "existing-id" // Optional
+ * }
+ * ```
+ * 
+ * @throws {401} Unauthorized
+ * @throws {400} Message is required
+ * @throws {404} Conversation not found
+ */
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -24,7 +40,7 @@ export async function POST(request: Request) {
 
     if (!message || typeof message !== 'string' || message.trim() === '') {
       return NextResponse.json(
-        { error: 'Le message est requis' },
+        { error: 'Message is required' },
         { status: 400 }
       );
     }
@@ -49,14 +65,14 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Erreur API Mistral:', errorData);
-      throw new Error(`Erreur API Mistral: ${errorData.error?.message || 'Erreur inconnue'}`);
+      console.error('Mistral API Error:', errorData);
+      throw new Error(`Mistral API Error: ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
 
     if (!data.choices?.[0]?.message?.content) {
-      throw new Error('Réponse invalide de l\'API Mistral');
+      throw new Error('Invalid response from Mistral API');
     }
 
     const assistantMessage = {
@@ -73,7 +89,7 @@ export async function POST(request: Request) {
       });
       
       if (!conversation) {
-        throw new Error('Conversation non trouvée');
+        throw new Error('Conversation not found');
       }
       
       conversation.messages.push(userMessage, assistantMessage);
@@ -94,9 +110,9 @@ export async function POST(request: Request) {
       conversationId: resultConversationId
     });
   } catch (error) {
-    console.error('Erreur:', error);
+    console.error('Chat error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Erreur lors du traitement de la requête' },
+      { error: 'Error processing message' },
       { status: 500 }
     );
   }

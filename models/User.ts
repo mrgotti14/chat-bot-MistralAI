@@ -1,5 +1,18 @@
 import { Schema, model, models } from 'mongoose';
 
+/**
+ * User interface supporting multiple authentication methods
+ * @interface IUser
+ * 
+ * @property {string} _id - MongoDB unique identifier
+ * @property {string} name - User's full name
+ * @property {string} email - User's unique email address
+ * @property {string} [password] - Hashed password (optional for OAuth users)
+ * @property {string} [image] - User's avatar URL
+ * @property {Date} [emailVerified] - Email verification timestamp
+ * @property {Date} createdAt - Account creation timestamp
+ * @property {Date} updatedAt - Last modification timestamp
+ */
 export interface IUser {
   _id: string;
   name: string;
@@ -11,6 +24,10 @@ export interface IUser {
   updatedAt: Date;
 }
 
+/**
+ * Mongoose schema for users
+ * Supports both email/password and OAuth authentication
+ */
 const userSchema = new Schema({
   name: {
     type: String,
@@ -44,6 +61,9 @@ const userSchema = new Schema({
   }
 });
 
+/**
+ * Pre-save middleware to automatically update the updatedAt timestamp
+ */
 userSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();

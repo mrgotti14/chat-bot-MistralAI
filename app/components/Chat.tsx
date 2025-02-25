@@ -4,6 +4,17 @@ import { useState, useEffect, useRef } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
 import  { type IConversation, type IMessage } from '@/models/Conversation';
 
+/**
+ * Props for the Chat component
+ * @interface ChatProps
+ * 
+ * @property {IConversation[]} conversations - List of user's conversations
+ * @property {string | null} currentConversationId - ID of the active conversation
+ * @property {() => Promise<void>} onConversationUpdate - Callback to update conversations list
+ * @property {(id: string) => void} onSelectConversation - Callback to change active conversation
+ * 
+ * Note: Enter to send message, Shift+Enter for new line
+ */
 interface ChatProps {
   conversations: IConversation[];
   currentConversationId: string | null;
@@ -11,6 +22,37 @@ interface ChatProps {
   onSelectConversation: (id: string) => void;
 }
 
+/**
+ * Main chat interface with message history and input form
+ * 
+ * @component
+ * @param {ChatProps} props - Component props
+ * @returns {JSX.Element} Complete chat interface
+ * 
+ * Features:
+ * - Message display with Markdown support
+ * - Message sending with loading state
+ * - Automatic new conversation creation
+ * - Auto-scroll to new messages
+ * - Responsive interface with textarea handling
+ * - Typing and sending indicators
+ * 
+ * Special behaviors:
+ * - Textarea auto-adjusts to content height
+ * - Enter to send, Shift+Enter for new line
+ * - Smooth scroll to new messages
+ * - Loading animation while waiting for response
+ * 
+ * @example
+ * ```tsx
+ * <Chat
+ *   conversations={userConversations}
+ *   currentConversationId="123"
+ *   onConversationUpdate={async () => await fetchConversations()}
+ *   onSelectConversation={(id) => setCurrentConversation(id)}
+ * />
+ * ```
+ */
 export default function Chat({ 
   conversations,
   currentConversationId,

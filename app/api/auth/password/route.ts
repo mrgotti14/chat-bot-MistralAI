@@ -5,13 +5,28 @@ import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
 import { authOptions } from '../[...nextauth]/auth-options';
 
+/**
+ * Password management endpoint
+ * @route POST /api/auth/password
+ * 
+ * Request body:
+ * ```json
+ * {
+ *   "password": "newpassword123"
+ * }
+ * ```
+ * 
+ * @throws {401} Unauthorized
+ * @throws {400} Password too short (min 6 characters)
+ * @throws {404} User not found
+ */
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -21,7 +36,7 @@ export async function POST(request: Request) {
 
     if (!password || typeof password !== 'string' || password.length < 6) {
       return NextResponse.json(
-        { error: 'Le mot de passe doit contenir au moins 6 caractères' },
+        { error: 'Password must be at least 6 characters long' },
         { status: 400 }
       );
     }
@@ -32,26 +47,24 @@ export async function POST(request: Request) {
     
     if (!user) {
       return NextResponse.json(
-        { error: 'Utilisateur non trouvé' },
+        { error: 'User not found' },
         { status: 404 }
       );
     }
 
-    // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Mettre à jour l'utilisateur avec le nouveau mot de passe
     user.password = hashedPassword;
     await user.save();
 
     return NextResponse.json({
       success: true,
-      message: 'Mot de passe ajouté avec succès'
+      message: 'Password successfully added'
     });
   } catch (error) {
-    console.error('Erreur lors de l\'ajout du mot de passe:', error);
+    console.error('Error adding password:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de l\'ajout du mot de passe' },
+      { error: 'Error adding password' },
       { status: 500 }
     );
   }

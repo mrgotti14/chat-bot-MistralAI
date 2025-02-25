@@ -2,10 +2,35 @@
 
 import { useState } from 'react';
 
+/**
+ * Props for the AddPassword component
+ * @interface AddPasswordProps
+ * 
+ * @property {() => void} [onSuccess] - Callback function called after successful password creation
+ */
 interface AddPasswordProps {
   onSuccess?: () => void;
 }
 
+/**
+ * Form component for setting a new password
+ * 
+ * @component
+ * @param {AddPasswordProps} props - Component props
+ * @returns {JSX.Element} Password creation form
+ * 
+ * Features:
+ * - Password matching validation
+ * - Minimum length validation (6 characters)
+ * - Error handling with visual feedback
+ * - Loading state during submission
+ * - Secure API call to save password
+ * 
+ * @example
+ * ```tsx
+ * <AddPassword onSuccess={() => console.log('Password successfully set')} />
+ * ```
+ */
 export default function AddPassword({ onSuccess }: AddPasswordProps) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

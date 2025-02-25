@@ -4,13 +4,21 @@ import dbConnect from '@/lib/mongoose';
 import Conversation from '@/models/Conversation';
 import { authOptions } from '../auth/[...nextauth]/auth-options';
 
+/**
+ * Retrieves all conversations for the authenticated user
+ * @route GET /api/conversations
+ * 
+ * @returns {Promise<NextResponse>} List of user's conversations sorted by last update
+ * @throws {Error} If user is not authenticated
+ * @throws {Error} If database connection fails
+ */
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -22,9 +30,9 @@ export async function GET() {
 
     return NextResponse.json(conversations);
   } catch (error) {
-    console.error('Erreur lors de la récupération des conversations:', error);
+    console.error('Error fetching conversations:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la récupération des conversations' },
+      { error: 'Error fetching conversations' },
       { status: 500 }
     );
   }

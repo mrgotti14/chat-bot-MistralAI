@@ -7,10 +7,20 @@ import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
 import type { Element } from 'hast';
 import type { ReactNode } from 'react';
+
+/**
+ * Props for the MarkdownRenderer component
+ * @interface MarkdownRendererProps
+ */
 interface MarkdownRendererProps {
+  /** Raw markdown content to render */
   content: string;
 }
 
+/**
+ * Props type for markdown component elements
+ * @interface ComponentPropsType
+ */
 type ComponentPropsType = {
   node?: Element;
   children?: ReactNode;
@@ -19,6 +29,19 @@ type ComponentPropsType = {
   href?: string;
 };
 
+/**
+ * Renders markdown content with syntax highlighting and custom styling
+ * 
+ * @component
+ * @param {MarkdownRendererProps} props - Component props
+ * @returns {JSX.Element} Styled markdown content
+ * 
+ * Features:
+ * - Syntax highlighting for code blocks
+ * - GitHub Flavored Markdown support
+ * - Custom styling for all markdown elements
+ * - Dark theme optimized
+ */
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   const components: Partial<Components> = {
     pre({ children, ...props }: ComponentPropsType) {

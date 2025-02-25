@@ -26,9 +26,8 @@ export async function GET() {
       );
     }
 
-    // On vérifie si c'est un nouvel utilisateur Google sans mot de passe
-    const isNewGoogleUser = user.password === undefined || user.password === null;
-    const needsPassword = isNewGoogleUser;
+    const isNewOAuthUser = user.password === undefined || user.password === null;
+    const needsPassword = isNewOAuthUser;
 
     return NextResponse.json({
       hasPassword: !needsPassword

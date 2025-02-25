@@ -14,7 +14,8 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
 - 🔐 Authentication system with multiple providers:
   - Email/Password authentication
   - Google OAuth integration
-  - Automatic password setup for Google users
+  - GitHub OAuth integration
+  - Automatic password setup for OAuth users
   - Seamless account linking between providers
 
 ## 🗺️ Roadmap
@@ -25,7 +26,7 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
 - [x] User session management
 - [x] OAuth integration
   - [x] Google authentication
-  - [ ] GitHub authentication
+  - [x] GitHub authentication
 - [ ] User profile management
 - [ ] API key management
 
@@ -70,12 +71,13 @@ The project is in beta with:
 - Added NextAuth.js integration with multiple providers:
   - Credentials provider for email/password
   - Google OAuth provider with automatic account linking
-  - Smart password management for Google users
+  - GitHub OAuth provider with automatic account linking
+  - Smart password management for OAuth users
 - Implemented user registration and login system
 - Added session management and protected routes
 - Created login and registration pages with form validation
 - Secured API routes with session checks
-- Added automatic password setup for Google users
+- Added automatic password setup for OAuth users
 - Implemented seamless account linking between providers
 
 ### Database & Storage
@@ -116,6 +118,7 @@ The project is in beta with:
 - A Mistral AI API key
 - MongoDB database (local or MongoDB Atlas)
 - Google OAuth credentials
+- GitHub OAuth credentials
 
 ## 🚀 Installation
 
@@ -156,7 +159,7 @@ npm install
 MISTRAL_API_KEY=your_mistral_api_key
 
 # Database
-MONGODB_URI=your_mongodb_uri
+MONGODB_URI=mongodb://admin:password123@localhost:27017/chat-mistral?authSource=admin
 
 # Authentication
 NEXTAUTH_SECRET=your_generated_secret_key
@@ -165,7 +168,13 @@ NEXTAUTH_URL=http://localhost:3000
 # Google OAuth
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# GitHub OAuth
+GITHUB_ID=your_github_client_id
+GITHUB_SECRET=your_github_client_secret
 ```
+
+> Note: The default MongoDB URI uses the credentials defined in the `docker-compose.yml` file. If you modified the credentials there, make sure to update the URI accordingly.
 
 5. Start the development server:
 ```bash

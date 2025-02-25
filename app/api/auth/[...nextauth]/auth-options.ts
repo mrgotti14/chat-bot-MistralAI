@@ -1,12 +1,17 @@
 import { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
 import { clientPromise } from "@/lib/mongoose";
 import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
 
+/**
+ * Extended Session type for NextAuth
+ * Adds user ID to the session object
+ */
 declare module "next-auth" {
   interface Session {
     user: {
@@ -18,9 +23,23 @@ declare module "next-auth" {
   }
 }
 
+/**
+ * NextAuth configuration options
+ * Supports multiple authentication providers:
+ * - GitHub
+ * - Google
+ * - Email/Password
+ * 
+ * Uses MongoDB adapter for session storage
+ */
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -30,11 +49,11 @@ export const authOptions: NextAuthOptions = {
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Mot de passe", type: "password" }
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Veuillez remplir tous les champs');
+          throw new Error('Please fill in all fields');
         }
 
         await dbConnect();
@@ -42,11 +61,11 @@ export const authOptions: NextAuthOptions = {
         const user = await User.findOne({ email: credentials.email });
 
         if (!user) {
-          throw new Error('Aucun utilisateur trouvé avec cet email');
+          throw new Error('No user found with this email');
         }
 
         if (!user.password) {
-          throw new Error('Veuillez vous connecter avec Google');
+          throw new Error('Please sign in with Google or GitHub');
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -55,7 +74,7 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isPasswordValid) {
-          throw new Error('Mot de passe incorrect');
+          throw new Error('Invalid password');
         }
 
         return {
@@ -69,19 +88,18 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === "google") {
+      if (account?.provider === "google" || account?.provider === "github") {
         try {
           await dbConnect();
           const existingUser = await User.findOne({ email: user.email });
           
           if (existingUser) {
-            // Mettre à jour les informations Google si nécessaire
             existingUser.name = user.name;
             existingUser.image = user.image;
             await existingUser.save();
           }
         } catch (error) {
-          console.error("Erreur lors de la vérification de l'utilisateur:", error);
+          console.error("Error checking user:", error);
           return false;
         }
       }

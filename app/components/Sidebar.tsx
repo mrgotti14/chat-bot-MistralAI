@@ -1,9 +1,19 @@
 'use client';
 
-
 import { IConversation } from '@/models/Conversation';
 import { signOut } from 'next-auth/react';
 
+/**
+ * Props for the Sidebar component
+ * @interface SidebarProps
+ * 
+ * @property {boolean} isOpen - Controls sidebar visibility on mobile
+ * @property {() => void} onClose - Function to close the sidebar
+ * @property {IConversation[]} conversations - List of user's conversations
+ * @property {string | null} currentConversationId - ID of the currently selected conversation
+ * @property {(id: string) => void} onSelectConversation - Callback to select a conversation
+ * @property {(id: string) => void} onDeleteConversation - Callback to delete a conversation
+ */
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -13,6 +23,33 @@ interface SidebarProps {
   onDeleteConversation: (id: string) => void;
 }
 
+/**
+ * Responsive sidebar with conversations list and actions
+ * 
+ * @component
+ * @param {SidebarProps} props - Component props
+ * @returns {JSX.Element} Sidebar with conversations list
+ * 
+ * Features:
+ * - Scrollable conversations list
+ * - New conversation creation
+ * - Existing conversation selection
+ * - Conversation deletion
+ * - User sign out
+ * - Responsive design (mobile overlay)
+ * 
+ * @example
+ * ```tsx
+ * <Sidebar
+ *   isOpen={isSidebarOpen}
+ *   onClose={() => setIsSidebarOpen(false)}
+ *   conversations={userConversations}
+ *   currentConversationId="123"
+ *   onSelectConversation={(id) => handleSelect(id)}
+ *   onDeleteConversation={(id) => handleDelete(id)}
+ * />
+ * ```
+ */
 export default function Sidebar({ 
   isOpen, 
   onClose, 

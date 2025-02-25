@@ -3,32 +3,45 @@ import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
 
+/**
+ * User registration endpoint
+ * @route POST /api/auth/register
+ * 
+ * Request body:
+ * ```json
+ * {
+ *   "name": "John Doe",
+ *   "email": "john@example.com",
+ *   "password": "securepassword123"
+ * }
+ * ```
+ * 
+ * @throws {400} Missing fields or email already in use
+ * @throws {500} Server error
+ */
 export async function POST(request: Request) {
   try {
     const { name, email, password } = await request.json();
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Tous les champs sont requis' },
+        { error: 'All fields are required' },
         { status: 400 }
       );
     }
 
     await dbConnect();
 
-    // Vérifier si l'email existe déjà
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Cet email est déjà utilisé' },
+        { error: 'Email already in use' },
         { status: 400 }
       );
     }
 
-    // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Créer l'utilisateur
     const user = await User.create({
       name,
       email,
@@ -36,7 +49,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({
-      message: 'Compte créé avec succès',
+      message: 'Account created successfully',
       user: {
         id: user._id,
         name: user.name,
@@ -44,9 +57,9 @@ export async function POST(request: Request) {
       }
     });
   } catch (error) {
-    console.error('Erreur lors de l\'inscription:', error);
+    console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la création du compte' },
+      { error: 'Error creating account' },
       { status: 500 }
     );
   }

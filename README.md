@@ -7,9 +7,13 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
 - 💬 Intuitive chat interface inspired by ChatGPT
 - 📝 Full Markdown support with syntax highlighting
 - 💾 Conversation persistence in MongoDB
-- 🔄 Complete conversation management (create, read, delete)
+- 🔄 Complete conversation management:
+  - Create new conversations
+  - Rename existing conversations
+  - Delete conversations
+  - Real-time search through titles and content
 - 📱 Responsive interface (mobile and desktop)
-- 🎨 Elegant dark theme
+- 🎨 Elegant dark theme with modern UI elements
 - ⌨️ Keyboard shortcuts for better productivity
 - 🔐 Authentication system with multiple providers:
   - Email/Password authentication
@@ -54,7 +58,7 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
   - [ ] Add testimonials section
 - [ ] Conversation context management
 - [x] Ability to rename conversations
-- [ ] Search through conversation history
+- [x] Search through conversation history
 - [ ] Performance improvements
 
 ## Current Status
@@ -64,6 +68,7 @@ The project is in beta with:
 - ✅ REST API for conversation management
 - ✅ User interface synchronized with database
 - ✅ Authentication system with multiple providers
+- ✅ Advanced conversation search functionality
 - ❌ No context management in conversations
 
 ## 🔄 Recent Updates

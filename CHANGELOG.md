@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+### Sidebar and Search Enhancements
+- Implemented advanced conversation search functionality:
+  - Real-time search through conversation titles and content
+  - Instant visual feedback with animated results
+  - Clear search button with smooth transitions
+  - "No conversations found" state with animations
+- Enhanced sidebar UI for better user experience:
+  - Modernized design with consistent spacing
+  - Improved button interactions and hover states
+  - Refined animations and transitions
+  - Enhanced visual hierarchy
+  - Better contrast and accessibility
+  - Elegant purple theme integration
+  - Optimized mobile responsiveness
 
 ### Message Navigation Improvements
 - Enhanced message scrolling behavior:

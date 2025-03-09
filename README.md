@@ -67,6 +67,21 @@ The project is in beta with:
 
 ## 🔄 Recent Updates
 
+### UI/UX Enhancements
+- Completely redesigned authentication pages with sophisticated animations:
+  - Orchestrated entrance animations using Framer Motion
+  - Interactive background effects with animated gradient blobs
+  - Smooth floating labels for form inputs
+  - Animated gradient text effects for titles
+  - Enhanced social login buttons with hover effects
+  - Polished micro-interactions throughout the interface
+- Improved overall user experience with:
+  - Staggered animations for better visual hierarchy
+  - Smooth transitions between states
+  - Responsive animations across all devices
+  - Carefully crafted loading states
+  - Enhanced error message presentations
+
 ### Authentication & User Management
 - Added NextAuth.js integration with multiple providers:
   - Credentials provider for email/password
@@ -109,6 +124,7 @@ The project is in beta with:
 - [Mistral AI API](https://mistral.ai/)
 - [React Markdown](https://github.com/remarkjs/react-markdown)
 - [NextAuth.js](https://next-auth.js.org/) - Authentication
+- [Framer Motion](https://www.framer.com/motion/) - Animation library
 - [Docker](https://www.docker.com/) - Containerization and development environment
 
 ## 📋 Prerequisites

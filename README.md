@@ -46,10 +46,11 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
 ### UX Improvements
 - [x] Conversation management (create, delete)
 - [x] Automatic display of new conversations
-- [ ] Landing page redesign
-  - [ ] Add feature showcase
-  - [ ] Improve mobile responsiveness
-  - [ ] Add pricing plans section
+- [x] Landing page redesign
+  - [x] Add feature showcase
+  - [x] Improve mobile responsiveness
+  - [x] Add pricing plans section
+  - [x] Add FAQ section
   - [ ] Add testimonials section
 - [ ] Conversation context management
 - [ ] Ability to rename conversations
@@ -66,6 +67,19 @@ The project is in beta with:
 - ❌ No context management in conversations
 
 ## 🔄 Recent Updates
+
+### Landing Page Redesign
+- Complete landing page redesign with GottiAI branding
+- Sophisticated animations using Framer Motion:
+  - Magnetic buttons with hover effects
+  - Gradient text animations
+  - Floating background elements
+  - Smooth section transitions
+  - Interactive feature cards
+- Responsive navigation with smooth scrolling
+- Modern pricing section with interactive cards
+- Expandable FAQ section with animations
+- Footer with comprehensive navigation
 
 ### Authentication & User Management
 - Added NextAuth.js integration with multiple providers:
@@ -86,18 +100,18 @@ The project is in beta with:
 - Implemented user-specific conversation storage
 - Added proper type definitions for User and Conversation models
 
+### Development Setup
+- Added Docker Compose configuration for easy database setup
+- Configured Turbopack for improved development experience
+- Updated environment variables structure
+- Added comprehensive TypeScript types for NextAuth
+
 ### UI/UX Improvements
 - Enhanced chat interface with immediate message display
 - Added loading states for better user feedback
 - Implemented proper session handling in components
 - Added logout functionality in the sidebar
 - Fixed message input behavior and auto-clearing
-
-### Development Setup
-- Added Docker Compose configuration for easy database setup
-- Configured Turbopack for improved development experience
-- Updated environment variables structure
-- Added comprehensive TypeScript types for NextAuth
 
 ## 🛠️ Technologies Used
 

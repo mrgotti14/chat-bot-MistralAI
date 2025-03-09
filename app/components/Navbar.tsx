@@ -1,11 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { motion, HTMLMotionProps } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const MotionNav = motion.nav;
 
 export default function Navbar() {
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <MotionNav 
       initial={{ y: -100 }}
@@ -26,17 +33,21 @@ export default function Navbar() {
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
-            {["Fonctionnalités", "Articles", "Tarifs"].map((item) => (
-              <Link 
-                key={item}
-                href={`#${item.toLowerCase()}`}
+            {[
+              { name: "Fonctionnalités", id: "features" },
+              { name: "Tarifs", id: "pricing" },
+              { name: "FAQ", id: "faq" }
+            ].map((item) => (
+              <button 
+                key={item.name}
+                onClick={() => scrollToSection(item.id)}
                 className="relative group"
               >
                 <span className="text-sm font-medium text-gray-300 transition-colors group-hover:text-white">
-                  {item}
+                  {item.name}
                 </span>
                 <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#A435F0] to-[#8710E0] transition-all duration-300 group-hover:w-full"></div>
-              </Link>
+              </button>
             ))}
             <Link 
               href="/auth/login" 

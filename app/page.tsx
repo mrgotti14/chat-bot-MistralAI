@@ -415,7 +415,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-32 overflow-hidden">
+      <section id="features" className="relative py-32 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#A435F0] rounded-full mix-blend-multiply filter blur-[128px] opacity-10"></div>
@@ -522,7 +522,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20">
+      <section id="pricing" className="py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-white text-center mb-16">Des Plans Adaptés à Vos Besoins</h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -612,7 +612,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-[#1C1D1F]">
+      <section id="faq" className="py-20 bg-[#1C1D1F]">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -1,5 +1,7 @@
 'use client';
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 /**
  * Props for the Modal component
  * @interface ModalProps
@@ -13,6 +15,34 @@ interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
 }
+
+const overlayVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 }
+};
+
+const modalVariants = {
+  hidden: { 
+    opacity: 0,
+    scale: 0.95,
+    y: 20
+  },
+  visible: { 
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      damping: 25,
+      stiffness: 300
+    }
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    y: 20
+  }
+};
 
 /**
  * Reusable Modal component with backdrop and animation
@@ -31,22 +61,30 @@ interface ModalProps {
  * ```
  */
 export default function Modal({ isOpen, onClose, children }: ModalProps) {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div
-          className="fixed inset-0 bg-black/75 transition-opacity"
-          onClick={onClose}
-        />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <motion.div
+            variants={overlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+            onClick={onClose}
+          />
 
-        <div className="inline-block transform overflow-hidden rounded-lg text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
-          <div className="relative">
+          <motion.div
+            variants={modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="relative z-10 w-full max-w-lg mx-4"
+          >
             {children}
-          </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 } 

@@ -1,6 +1,31 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+      delayChildren: 0.3
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  }
+};
 
 /**
  * Props for the AddPassword component
@@ -86,62 +111,119 @@ export default function AddPassword({ onSuccess }: AddPasswordProps) {
   };
 
   return (
-    <div className="bg-[#202123] p-6">
-      <h2 className="text-xl font-semibold text-white mb-4">
-        Définir un mot de passe
-      </h2>
-      <p className="text-gray-400 mb-6">
-        Pour plus de sécurité, veuillez définir un mot de passe pour votre compte.
-        Vous pourrez ensuite vous connecter avec votre email et ce mot de passe.
-      </p>
+    <motion.div 
+      className="bg-[#1C1D1F] p-8 rounded-xl relative overflow-hidden"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Background Effects */}
+      <div className="absolute inset-0">
+        <motion.div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#A435F0] rounded-full mix-blend-multiply filter blur-[64px] opacity-10"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.15, 0.1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <div className="absolute top-0 left-0 w-full h-full bg-[#1C1D1F] bg-[radial-gradient(#A435F0_1px,transparent_1px)] [background-size:32px_32px] opacity-5"></div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded">
-            {error}
-          </div>
-        )}
-
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
-            Nouveau mot de passe
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Entrez votre mot de passe"
-            required
-            minLength={6}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
-            Confirmer le mot de passe
-          </label>
-          <input
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Confirmez votre mot de passe"
-            required
-            minLength={6}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+      <div className="relative z-10">
+        <motion.h2 
+          variants={itemVariants}
+          className="text-2xl font-bold bg-gradient-to-r from-[#A435F0] to-[#8710E0] bg-clip-text text-transparent mb-4"
         >
-          {isLoading ? 'Définition en cours...' : 'Définir le mot de passe'}
-        </button>
-      </form>
-    </div>
+          Définir un mot de passe
+        </motion.h2>
+        
+        <motion.p 
+          variants={itemVariants}
+          className="text-gray-400 mb-8"
+        >
+          Pour plus de sécurité, veuillez définir un mot de passe pour votre compte.
+          Vous pourrez ensuite vous connecter avec votre email et ce mot de passe.
+        </motion.p>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <motion.div 
+              variants={itemVariants}
+              className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          <motion.div 
+            variants={itemVariants}
+            className="group relative"
+          >
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="peer appearance-none relative block w-full px-4 py-3 border border-gray-700 placeholder-transparent text-white bg-[#2D2F31] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A435F0] focus:border-[#A435F0] transition-all duration-300 sm:text-sm"
+              placeholder="Nouveau mot de passe"
+              required
+              minLength={6}
+            />
+            <label 
+              htmlFor="password"
+              className="absolute left-4 -top-6 text-sm text-gray-400 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-3 peer-focus:-top-6 peer-focus:text-sm peer-focus:text-[#A435F0]"
+            >
+              Nouveau mot de passe
+            </label>
+          </motion.div>
+
+          <motion.div 
+            variants={itemVariants}
+            className="group relative"
+          >
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="peer appearance-none relative block w-full px-4 py-3 border border-gray-700 placeholder-transparent text-white bg-[#2D2F31] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A435F0] focus:border-[#A435F0] transition-all duration-300 sm:text-sm"
+              placeholder="Confirmer le mot de passe"
+              required
+              minLength={6}
+            />
+            <label 
+              htmlFor="confirmPassword"
+              className="absolute left-4 -top-6 text-sm text-gray-400 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-3 peer-focus:-top-6 peer-focus:text-sm peer-focus:text-[#A435F0]"
+            >
+              Confirmer le mot de passe
+            </label>
+          </motion.div>
+
+          <motion.button
+            variants={itemVariants}
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-[#A435F0] to-[#8710E0] text-white rounded-lg py-3 px-4 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#A435F0] focus:ring-offset-2 focus:ring-offset-[#1C1D1F] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <motion.div 
+                  className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+              </div>
+            ) : (
+              'Définir le mot de passe'
+            )}
+          </motion.button>
+        </form>
+      </div>
+    </motion.div>
   );
 } 

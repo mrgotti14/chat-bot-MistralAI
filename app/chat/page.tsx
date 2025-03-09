@@ -76,6 +76,24 @@ export default function ChatPage() {
     setShowPasswordModal(false);
   };
 
+  const handleRenameConversation = async (id: string, newTitle: string) => {
+    try {
+      const response = await fetch(`/api/conversations/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title: newTitle })
+      });
+
+      if (!response.ok) throw new Error('Erreur lors du renommage');
+      
+      await loadConversations();
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+
   if (isCheckingPassword) {
     return (
       <div className="min-h-screen bg-[#343541] flex items-center justify-center">
@@ -94,6 +112,7 @@ export default function ChatPage() {
           currentConversationId={currentConversationId}
           onSelectConversation={setCurrentConversationId}
           onDeleteConversation={handleDeleteConversation}
+          onRenameConversation={handleRenameConversation}
         />
         <div className="flex-1 flex flex-col">
           <div className="md:hidden p-2">

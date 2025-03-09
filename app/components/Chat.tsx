@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import MarkdownRenderer from './MarkdownRenderer';
 import  { type IConversation, type IMessage } from '@/models/Conversation';
 
@@ -125,15 +126,22 @@ export default function Chat({
   const currentMessages = getCurrentConversation()?.messages || [];
 
   return (
-    <div className="relative flex flex-col h-full">
+    <div className="relative flex flex-col h-full bg-[#1C1D1F]">
       <div className="flex-1 overflow-y-auto custom-scrollbar pb-36">
         {(!currentConversationId || conversations.length === 0) && (
-          <div className="text-center py-10">
-            <h1 className="text-4xl font-semibold text-gray-200 mb-10">Chat Mistral AI</h1>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center py-10"
+          >
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#A435F0] to-[#8710E0] text-transparent bg-clip-text mb-10">
+              GottiAI Chat
+            </h1>
             <div className="text-gray-400">
-              <p className="text-lg mb-8">Comment puis-je vous aider aujourd&apos;hui ?</p>
+              <p className="text-lg mb-8">Comment puis-je vous aider aujourd'hui ?</p>
             </div>
-          </div>
+          </motion.div>
         )}
         <style jsx>{`
           .custom-scrollbar::-webkit-scrollbar {
@@ -152,65 +160,122 @@ export default function Chat({
         `}</style>
         <div className="pb-4">
           {currentMessages.map((msg: IMessage, index: number) => (
-            <div
+            <motion.div
               key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
               className="py-4"
             >
               <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 {msg.role === 'user' ? (
                   <div className="flex justify-end">
-                    <div className="bg-blue-600 rounded-2xl px-4 py-2 max-w-[85%]">
-                      <MarkdownRenderer content={msg.content} />
-                    </div>
+                    <motion.div 
+                      whileHover={{ scale: 1.01 }}
+                      className="bg-gradient-to-r from-[#A435F0] to-[#8710E0] rounded-2xl px-4 py-2 max-w-[85%] shadow-lg"
+                    >
+                      <div className="text-white">
+                        <MarkdownRenderer content={msg.content} />
+                      </div>
+                    </motion.div>
                   </div>
                 ) : (
                   <div className="flex gap-4 lg:gap-6">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">M</span>
-                    </div>
-                    <div className="min-w-0 flex-1">
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-r from-[#A435F0] to-[#8710E0] flex items-center justify-center shadow-lg"
+                    >
+                      <span className="text-white text-sm font-medium">G</span>
+                    </motion.div>
+                    <motion.div 
+                      whileHover={{ scale: 1.01 }}
+                      className="min-w-0 flex-1 bg-[#2D2F31] p-4 rounded-xl shadow-lg text-white"
+                    >
                       <MarkdownRenderer content={msg.content} />
-                    </div>
+                    </motion.div>
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
           {isLoading && (
             <>
-              <div className="py-4">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="py-4"
+              >
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                   <div className="flex justify-end">
-                    <div className="bg-blue-600 rounded-2xl px-4 py-2 max-w-[85%]">
-                      <MarkdownRenderer content={pendingMessage} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="py-4">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="flex gap-4 lg:gap-6">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">M</span>
-                    </div>
-                    <div className="flex-1 flex items-center">
-                      <div className="flex gap-2">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                    <div className="bg-gradient-to-r from-[#A435F0] to-[#8710E0] rounded-2xl px-4 py-2 max-w-[85%] shadow-lg">
+                      <div className="text-white">
+                        <MarkdownRenderer content={pendingMessage} />
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="py-4"
+              >
+                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex gap-4 lg:gap-6">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-r from-[#A435F0] to-[#8710E0] flex items-center justify-center shadow-lg">
+                      <span className="text-white text-sm font-medium">G</span>
+                    </div>
+                    <div className="flex-1 flex items-center">
+                      <div className="flex gap-2">
+                        <motion.div 
+                          animate={{ 
+                            scale: [1, 1.2, 1],
+                            opacity: [0.5, 1, 0.5]
+                          }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                          }}
+                          className="w-2 h-2 bg-[#A435F0] rounded-full"
+                        />
+                        <motion.div 
+                          animate={{ 
+                            scale: [1, 1.2, 1],
+                            opacity: [0.5, 1, 0.5]
+                          }}
+                          transition={{
+                            duration: 1,
+                            delay: 0.2,
+                            repeat: Infinity,
+                          }}
+                          className="w-2 h-2 bg-[#A435F0] rounded-full"
+                        />
+                        <motion.div 
+                          animate={{ 
+                            scale: [1, 1.2, 1],
+                            opacity: [0.5, 1, 0.5]
+                          }}
+                          transition={{
+                            duration: 1,
+                            delay: 0.4,
+                            repeat: Infinity,
+                          }}
+                          className="w-2 h-2 bg-[#A435F0] rounded-full"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
             </>
           )}
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className="absolute bottom-0 inset-x-0 z-10">
-        <div className="bg-gradient-to-t from-[#343541] via-[#343541]/90 to-transparent h-12"></div>
-        <div className="bg-[#343541]">
+      <div className="absolute bottom-0 left-0 right-0">
+        <div className="bg-gradient-to-t from-[#1C1D1F] via-[#1C1D1F]/90 to-transparent h-12" />
+        <div className="bg-[#1C1D1F]">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
             <form onSubmit={handleSubmit} className="relative">
               <div className="flex items-end">
@@ -229,7 +294,7 @@ export default function Chat({
                       }
                     }}
                     placeholder="Envoyez un message..."
-                    className="w-full bg-[#40414F] text-white rounded-xl pl-4 pr-12 py-3 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-700/50 overflow-y-hidden"
+                    className="w-full bg-[#2D2F31] text-white rounded-xl pl-4 pr-12 py-3 focus:outline-none focus:ring-2 focus:ring-[#A435F0] border border-[#A435F0]/20 overflow-y-hidden transition-all"
                     style={{
                       minHeight: '44px',
                       maxHeight: '200px',
@@ -238,17 +303,17 @@ export default function Chat({
                     }}
                     disabled={isLoading}
                   />
-                  <div className="absolute right-2 bottom-2">
-                    <button
-                      type="submit"
-                      disabled={isLoading || !message.trim()}
-                      className="p-2 text-gray-400 hover:text-gray-200 disabled:hover:text-gray-400 disabled:opacity-40 transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                        <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-                      </svg>
-                    </button>
-                  </div>
+                  <motion.button
+                    type="submit"
+                    disabled={isLoading || !message.trim()}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="absolute right-2 bottom-1.5 p-2 text-[#A435F0] hover:text-[#8710E0] disabled:text-gray-400 disabled:hover:text-gray-400 disabled:opacity-40 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                      <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                    </svg>
+                  </motion.button>
                 </div>
               </div>
               <div className="mt-2 text-center text-xs text-gray-400">

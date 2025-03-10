@@ -35,15 +35,15 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
 - [ ] API key management
 
 ### Payment & Subscription
-- [ ] Stripe integration
-  - [ ] Basic subscription plans
+- [x] Stripe integration
+  - [x] Basic subscription plans
   - [ ] Usage-based billing
   - [ ] Payment history
   - [ ] Invoice management
-- [ ] Free tier limitations
-- [ ] Premium features
-  - [ ] Higher rate limits
-  - [ ] Advanced AI models access
+- [x] Free tier limitations
+- [x] Premium features
+  - [x] Higher rate limits
+  - [x] Advanced AI models access
   - [ ] Priority support
 - [ ] Team/Enterprise plans
 

@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## [0.2.0] - 2024-03-XX
+
+### Added
+- Stripe subscription system integration
+  - Added checkout session endpoint for payment handling
+  - Created StripeButton component for payment integration
+  - Configured Stripe environment variables
+  - Integrated payment buttons in pricing cards
+- Authentication flow for payments
+  - Added authentication check before payment
+  - Implemented redirect to login page for unauthenticated users
+  - Added callback URL to return to pricing page after login
+- Pricing plans structure
+  - Free tier with basic features and limitations
+  - Premium tier with advanced features
+  - Business tier for custom solutions
+- Advanced AI model access differentiation
+  - Mistral-7B for free tier
+  - Mistral-8x7B for premium users
+
+### Changed
+- Updated pricing cards UI with clear feature differentiation
+- Improved button alignment in pricing section
+- Enhanced visual feedback for unavailable features
+
+### Technical
+- Added Stripe dependencies
+- Configured Next.js for external image domains (Google, GitHub avatars)
+- Set up webhook endpoints for Stripe events
+
 ### Sidebar and Search Enhancements
 - Implemented advanced conversation search functionality:
   - Real-time search through conversation titles and content

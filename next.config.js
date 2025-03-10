@@ -17,7 +17,13 @@ const nextConfig = {
       moduleIdStrategy: 'deterministic',
       resolveExtensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
     }
-  }
+  },
+  images: {
+    domains: [
+      'lh3.googleusercontent.com', // Pour les avatars Google
+      'avatars.githubusercontent.com', // Pour les avatars GitHub
+    ],
+  },
 };
 
 module.exports = nextConfig; 

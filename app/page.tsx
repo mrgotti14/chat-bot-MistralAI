@@ -6,6 +6,7 @@ import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import Navbar from './components/Navbar';
+import StripeButton from './components/StripeButton';
 
 // Composant MagneticButton
 interface MagneticButtonProps {
@@ -61,13 +62,6 @@ export default function Home() {
   const router = useRouter();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      router.push('/chat');
-    }
-  }, [status, router]);
-
-
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-[#343541] flex items-center justify-center">
@@ -75,7 +69,6 @@ export default function Home() {
       </div>
     );
   }
-
 
   return (
     <main className="min-h-screen bg-[#1C1D1F] overflow-hidden">
@@ -319,6 +312,7 @@ export default function Home() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="group relative px-8 py-4 w-full overflow-hidden hover-trigger"
+                  onClick={() => status === 'authenticated' ? router.push('/chat') : router.push('/auth/login')}
                 >
                   <motion.div 
                     className="absolute inset-0 border border-[#A435F0] rounded-lg"
@@ -331,8 +325,24 @@ export default function Home() {
                       ease: "easeInOut"
                     }}
                   ></motion.div>
-                  <div className="relative text-white font-semibold group-hover:text-[#A435F0] transition-colors">
-                    Voir la Démo
+                  <div className="relative text-white font-semibold group-hover:text-[#A435F0] transition-colors flex items-center justify-center">
+                    {status === 'authenticated' ? 'Accéder au Chat' : 'Voir la Démo'}
+                    <motion.svg 
+                      className="w-5 h-5 ml-2"
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                      animate={{
+                        x: [0, 4, 0]
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </motion.svg>
                   </div>
                 </motion.button>
               </MagneticButton>
@@ -531,18 +541,25 @@ export default function Home() {
                 plan: "Découverte",
                 price: "0€",
                 period: "pour toujours",
+                priceId: null,
                 features: [
                   "50 messages par jour",
                   "Support Markdown basique",
                   "Historique 7 jours",
                   "Connexion email",
-                  "Interface responsive"
+                  "Interface responsive",
+                  "Modèle Mistral-7B",
+                  "✕ Export des conversations",
+                  "✕ Support prioritaire",
+                  "✕ Personnalisation avancée",
+                  "✕ API dédiée"
                 ]
               },
               {
                 plan: "Premium",
                 price: "9.99€",
                 period: "par mois",
+                priceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID,
                 popular: true,
                 features: [
                   "Messages illimités",
@@ -551,13 +568,17 @@ export default function Home() {
                   "Multi-authentification",
                   "Export des données",
                   "Support prioritaire",
-                  "Personnalisation avancée"
+                  "Modèle Mistral-8x7B",
+                  "Personnalisation avancée",
+                  "✕ API dédiée",
+                  "✕ Déploiement privé"
                 ]
               },
               {
                 plan: "Business",
                 price: "Sur mesure",
                 period: "contactez-nous",
+                priceId: null,
                 features: [
                   "Tout du plan Premium",
                   "API dédiée",
@@ -565,7 +586,10 @@ export default function Home() {
                   "Formation personnalisée",
                   "Déploiement privé",
                   "SLA garanti",
-                  "Statistiques avancées"
+                  "Statistiques avancées",
+                  "Modèles personnalisés",
+                  "Intégration sur mesure",
+                  "Sécurité renforcée"
                 ]
               }
             ].map((pricing, index) => (
@@ -575,7 +599,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`bg-[#2D2F31] p-8 rounded-lg relative hover-trigger ${
+                className={`bg-[#2D2F31] p-8 rounded-lg relative hover-trigger flex flex-col ${
                   pricing.popular ? 'border-2 border-[#A435F0]' : ''
                 }`}
               >
@@ -591,19 +615,35 @@ export default function Home() {
                   <p className="text-4xl font-bold text-[#A435F0]">{pricing.price}</p>
                   <p className="text-gray-400 mb-1">{pricing.period}</p>
                 </div>
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-8 flex-grow">
                   {pricing.features.map((feature, i) => (
                     <li key={i} className="text-gray-300 flex items-center">
-                      <span className="text-[#A435F0] mr-2">✓</span> {feature}
+                      <span className={`mr-2 ${feature.startsWith('✕') ? 'text-gray-500' : 'text-[#A435F0]'}`}>
+                        {feature.startsWith('✕') ? '✕' : '✓'}
+                      </span>
+                      {feature.startsWith('✕') ? feature.slice(2) : feature}
                     </li>
                   ))}
                 </ul>
-                <MagneticButton className="w-full">
-                  <button className={`w-full px-6 py-3 rounded hover:bg-[#8710E0] transition-colors hover-trigger ${
-                    pricing.popular ? 'bg-[#A435F0] text-white' : 'bg-transparent border border-[#A435F0] text-white hover:bg-[#A435F0]/10'
-                  }`}>
-                    {pricing.plan === "Business" ? "Contactez-nous" : "Commencer"}
-                  </button>
+                <MagneticButton className="w-full mt-auto">
+                  {pricing.priceId ? (
+                    <StripeButton
+                      priceId={pricing.priceId}
+                      className={`w-full px-6 py-3 rounded hover:bg-[#8710E0] transition-colors hover-trigger ${
+                        pricing.popular ? 'bg-[#A435F0] text-white' : 'bg-transparent border border-[#A435F0] text-white hover:bg-[#A435F0]/10'
+                      }`}
+                    >
+                      Commencer
+                    </StripeButton>
+                  ) : (
+                    <button
+                      className={`w-full px-6 py-3 rounded hover:bg-[#8710E0] transition-colors hover-trigger ${
+                        pricing.popular ? 'bg-[#A435F0] text-white' : 'bg-transparent border border-[#A435F0] text-white hover:bg-[#A435F0]/10'
+                      }`}
+                    >
+                      {pricing.plan === "Business" ? "Contactez-nous" : "Commencer"}
+                    </button>
+                  )}
                 </MagneticButton>
               </motion.div>
             ))}

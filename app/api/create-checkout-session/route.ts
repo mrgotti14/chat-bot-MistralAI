@@ -37,10 +37,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Connect to database
     await dbConnect();
 
-    // Get user from database
     const user = await User.findOne({ email: session.user.email });
     
     if (!user) {
@@ -50,11 +48,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create or retrieve Stripe customer
     let stripeCustomerId = user.stripeCustomerId;
 
     if (!stripeCustomerId) {
-      // Create new Stripe customer
       const customer = await stripe.customers.create({
         email: session.user.email,
         name: user.name,
@@ -63,14 +59,12 @@ export async function POST(req: Request) {
         },
       });
 
-      // Update user with Stripe customer ID
       user.stripeCustomerId = customer.id;
       await user.save();
       
       stripeCustomerId = customer.id;
     }
 
-    // Create checkout session
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       payment_method_types: ['card'],

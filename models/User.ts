@@ -15,6 +15,11 @@ import { Schema, model, models } from 'mongoose';
  * @property {string} [subscriptionStatus] - Status of the subscription (active, canceled, etc.)
  * @property {Date} [subscriptionEnd] - End date of current subscription period
  * @property {string} [subscriptionTier] - Current subscription tier (free, pro, business)
+ * @property {number} [dailyMessageCount] - Number of messages sent today
+ * @property {Date} [lastMessageDate] - Last message sent date
+ * @property {number} [activeConversations] - Number of active conversations
+ * @property {number} [apiRequestsCount] - Number of API requests made
+ * @property {Date} [apiRequestsResetDate] - Date when API requests reset
  * @property {Date} createdAt - Account creation timestamp
  * @property {Date} updatedAt - Last modification timestamp
  */
@@ -30,6 +35,11 @@ export interface IUser {
   subscriptionStatus?: 'active' | 'canceled' | 'past_due' | 'unpaid' | 'incomplete' | 'incomplete_expired';
   subscriptionEnd?: Date;
   subscriptionTier?: 'free' | 'pro' | 'business';
+  dailyMessageCount?: number;
+  lastMessageDate?: Date;
+  activeConversations?: number;
+  apiRequestsCount?: number;
+  apiRequestsResetDate?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -82,6 +92,31 @@ const userSchema = new Schema({
     type: String,
     enum: ['free', 'pro', 'business'],
     default: 'free'
+  },
+  dailyMessageCount: {
+    type: Number,
+    default: 0
+  },
+  lastMessageDate: {
+    type: Date,
+    default: Date.now
+  },
+  activeConversations: {
+    type: Number,
+    default: 0
+  },
+  apiRequestsCount: {
+    type: Number,
+    default: 0
+  },
+  apiRequestsResetDate: {
+    type: Date,
+    default: () => {
+      const date = new Date();
+      date.setDate(1); // first day of the next month
+      date.setMonth(date.getMonth() + 1);
+      return date;
+    }
   },
   createdAt: {
     type: Date,

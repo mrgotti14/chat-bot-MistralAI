@@ -21,6 +21,12 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
   - GitHub OAuth integration
   - Automatic password setup for OAuth users
   - Seamless account linking between providers
+- 💳 Complete Stripe subscription system:
+  - Multiple subscription tiers
+  - Secure payment processing
+  - Webhook integration for subscription lifecycle
+  - Transaction history tracking
+  - Automatic subscription status management
 
 ## 🗺️ Roadmap
 
@@ -37,8 +43,9 @@ A modern and elegant chat interface to interact with Mistral AI API, built with 
 ### Payment & Subscription
 - [x] Stripe integration
   - [x] Basic subscription plans
-  - [ ] Usage-based billing
-  - [ ] Payment history
+  - [x] Subscription lifecycle management
+  - [x] Transaction history
+  - [x] Webhook integration
   - [ ] Invoice management
 - [x] Free tier limitations
 - [x] Premium features
@@ -69,6 +76,7 @@ The project is in beta with:
 - ✅ User interface synchronized with database
 - ✅ Authentication system with multiple providers
 - ✅ Advanced conversation search functionality
+- ✅ Complete Stripe subscription system
 - ❌ No context management in conversations
 
 ## 🔄 Recent Updates

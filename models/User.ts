@@ -10,6 +10,11 @@ import { Schema, model, models } from 'mongoose';
  * @property {string} [password] - Hashed password (optional for OAuth users)
  * @property {string} [image] - User's avatar URL
  * @property {Date} [emailVerified] - Email verification timestamp
+ * @property {string} [stripeCustomerId] - Stripe customer ID
+ * @property {string} [subscriptionId] - Current Stripe subscription ID
+ * @property {string} [subscriptionStatus] - Status of the subscription (active, canceled, etc.)
+ * @property {Date} [subscriptionEnd] - End date of current subscription period
+ * @property {string} [subscriptionTier] - Current subscription tier (free, pro, business)
  * @property {Date} createdAt - Account creation timestamp
  * @property {Date} updatedAt - Last modification timestamp
  */
@@ -20,6 +25,11 @@ export interface IUser {
   password?: string;
   image?: string;
   emailVerified?: Date;
+  stripeCustomerId?: string;
+  subscriptionId?: string;
+  subscriptionStatus?: 'active' | 'canceled' | 'past_due' | 'unpaid' | 'incomplete' | 'incomplete_expired';
+  subscriptionEnd?: Date;
+  subscriptionTier?: 'free' | 'pro' | 'business';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,6 +60,28 @@ const userSchema = new Schema({
   emailVerified: {
     type: Date,
     required: false
+  },
+  stripeCustomerId: {
+    type: String,
+    required: false
+  },
+  subscriptionId: {
+    type: String,
+    required: false
+  },
+  subscriptionStatus: {
+    type: String,
+    enum: ['active', 'canceled', 'past_due', 'unpaid', 'incomplete', 'incomplete_expired'],
+    required: false
+  },
+  subscriptionEnd: {
+    type: Date,
+    required: false
+  },
+  subscriptionTier: {
+    type: String,
+    enum: ['free', 'pro', 'business'],
+    default: 'free'
   },
   createdAt: {
     type: Date,

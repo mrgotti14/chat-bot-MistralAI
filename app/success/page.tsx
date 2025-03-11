@@ -13,7 +13,6 @@ export default function SuccessPage() {
     const sessionId = searchParams.get('session_id');
     
     if (sessionId) {
-      // Ici, vous pouvez ajouter une vérification de la session avec votre backend
       setStatus('success');
     } else {
       setStatus('error');

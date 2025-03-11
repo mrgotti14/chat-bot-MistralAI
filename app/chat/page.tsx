@@ -31,7 +31,7 @@ export default function ChatPage() {
     loadConversations();
   }, []);
 
-  // Vérifier si l'utilisateur a besoin de définir un mot de passe
+  // Check if the user needs to set a password
   useEffect(() => {
     const checkPasswordStatus = async () => {
       try {
@@ -39,7 +39,7 @@ export default function ChatPage() {
         const response = await fetch('/api/auth/password/check');
         const data = await response.json();
         
-        // Ne montrer la modale que si l'utilisateur n'a pas de mot de passe
+        // Only show the modal if the user doesn't have a password
         if (!data.hasPassword) {
           setShowPasswordModal(true);
         }
@@ -61,14 +61,14 @@ export default function ChatPage() {
         method: 'DELETE'
       });
 
-      if (!response.ok) throw new Error('Erreur lors de la suppression');
+      if (!response.ok) throw new Error('Error deleting conversation');
       
       await loadConversations();
       if (currentConversationId === id) {
         setCurrentConversationId(null);
       }
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Error:', error);
     }
   };
 
@@ -86,11 +86,11 @@ export default function ChatPage() {
         body: JSON.stringify({ title: newTitle })
       });
 
-      if (!response.ok) throw new Error('Erreur lors du renommage');
+      if (!response.ok) throw new Error('Error renaming conversation');
       
       await loadConversations();
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Error:', error);
     }
   };
 
@@ -138,7 +138,7 @@ export default function ChatPage() {
 
       <Modal 
         isOpen={showPasswordModal} 
-        onClose={() => {}} // Modal non fermable
+        onClose={() => {}}
       >
         <AddPassword onSuccess={handlePasswordSuccess} />
       </Modal>

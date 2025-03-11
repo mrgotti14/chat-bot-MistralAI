@@ -26,7 +26,7 @@ export const SUBSCRIPTION_PLANS = {
         customization: true,
         api: {
           enabled: true,
-          rateLimit: 1000 // requêtes par mois
+          rateLimit: 1000 // requests per month
         },
         prioritySupport: false
       }
@@ -36,15 +36,15 @@ export const SUBSCRIPTION_PLANS = {
     name: 'Entreprise',
     tier: 'business',
     limits: {
-      messagesPerDay: -1, // illimité
-      maxResponseLength: -1, // illimité
-      maxActiveConversations: -1, // illimité
+      messagesPerDay: -1, // unlimited
+      maxResponseLength: -1, // unlimited
+      maxActiveConversations: -1, // unlimited
       features: {
         export: true,
         customization: true,
         api: {
           enabled: true,
-          rateLimit: -1 // illimité
+          rateLimit: -1 // unlimited
         },
         prioritySupport: true
       }

@@ -80,11 +80,11 @@ export default function Sidebar({
 
   const filteredConversations = conversations.filter(conv => {
     const searchLower = searchQuery.toLowerCase();
-    // Search in title
+
     if (conv.title.toLowerCase().includes(searchLower)) {
       return true;
     }
-    // Search in messages content
+
     return conv.messages.some(msg => 
       msg.content.toLowerCase().includes(searchLower)
     );

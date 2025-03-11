@@ -74,7 +74,7 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch {
-      setError('Une erreur est survenue');
+      setError('An error occurred');
     } finally {
       setIsLoading(false);
     }

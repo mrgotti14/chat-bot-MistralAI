@@ -102,16 +102,15 @@ export default function Chat({
         })
       });
 
-      if (!response.ok) throw new Error('Erreur lors de l&apos;envoi du message');
+      if (!response.ok) throw new Error('Error sending message');
       
       const data = await response.json();
       
-      // Si c'est une nouvelle conversation, on met à jour l'ID immédiatement
+     
       if (!currentConversationId && data.conversationId) {
         onSelectConversation(data.conversationId);
       }
       
-      // Puis on met à jour la liste des conversations
       await onConversationUpdate();
     } catch (error) {
       console.error('Erreur:', error);

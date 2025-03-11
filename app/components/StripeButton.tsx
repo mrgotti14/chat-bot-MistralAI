@@ -21,9 +21,9 @@ export default function StripeButton({ priceId, children, className = '' }: Stri
 
   const handlePayment = async () => {
     try {
-      // Vérifier si l'utilisateur est connecté
+      // Check if the user is connected
       if (status !== 'authenticated') {
-        // Rediriger vers la page de connexion avec un retour à la page de tarification
+        // Redirect to the login page with a return to the pricing page
         router.push(`/auth/login?callbackUrl=${encodeURIComponent('/pricing')}`);
         return;
       }
@@ -32,11 +32,11 @@ export default function StripeButton({ priceId, children, className = '' }: Stri
       setError(null);
 
       if (!priceId) {
-        throw new Error('ID du prix non défini');
+        throw new Error('Price ID not defined');
       }
 
       if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-        throw new Error('Clé publique Stripe non configurée');
+        throw new Error('Stripe public key not configured');
       }
       
       const response = await fetch('/api/create-checkout-session', {
@@ -55,13 +55,13 @@ export default function StripeButton({ priceId, children, className = '' }: Stri
       const { sessionId } = await response.json();
       
       if (!sessionId) {
-        throw new Error('Session ID non reçu');
+        throw new Error('Session ID not received');
       }
 
       const stripe = await stripePromise;
 
       if (!stripe) {
-        throw new Error('Stripe n\'a pas pu être initialisé');
+        throw new Error('Stripe could not be initialized');
       }
 
       const { error: stripeError } = await stripe.redirectToCheckout({
@@ -72,8 +72,8 @@ export default function StripeButton({ priceId, children, className = '' }: Stri
         throw new Error(stripeError.message);
       }
     } catch (error) {
-      console.error('Erreur lors du paiement:', error);
-      setError(error instanceof Error ? error.message : 'Une erreur est survenue');
+      console.error('Error during payment:', error);
+      setError(error instanceof Error ? error.message : 'An error occurred');
       setLoading(false);
     }
   };

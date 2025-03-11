@@ -18,7 +18,7 @@ export async function GET(
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -31,16 +31,16 @@ export async function GET(
     
     if (!conversation) {
       return NextResponse.json(
-        { error: 'Conversation non trouvée' },
+        { error: 'Conversation not found' },
         { status: 404 }
       );
     }
 
     return NextResponse.json(conversation);
   } catch (error) {
-    console.error('Erreur lors de la récupération de la conversation:', error);
+    console.error('Error fetching conversation:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la récupération de la conversation' },
+      { error: 'Error fetching conversation' },
       { status: 500 }
     );
   }
@@ -56,7 +56,7 @@ export async function DELETE(
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -69,16 +69,16 @@ export async function DELETE(
     
     if (!conversation) {
       return NextResponse.json(
-        { error: 'Conversation non trouvée' },
+        { error: 'Conversation not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ message: 'Conversation supprimée avec succès' });
+    return NextResponse.json({ message: 'Conversation deleted successfully' });
   } catch (error) {
-    console.error('Erreur lors de la suppression de la conversation:', error);
+    console.error('Error deleting conversation:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la suppression de la conversation' },
+      { error: 'Error deleting conversation' },
       { status: 500 }
     );
   }
@@ -94,7 +94,7 @@ export async function PATCH(
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -103,7 +103,7 @@ export async function PATCH(
     
     if (!title || typeof title !== 'string' || title.trim() === '') {
       return NextResponse.json(
-        { error: 'Titre invalide' },
+        { error: 'Invalid title' },
         { status: 400 }
       );
     }
@@ -120,7 +120,7 @@ export async function PATCH(
     
     if (!conversation) {
       return NextResponse.json(
-        { error: 'Conversation non trouvée' },
+        { error: 'Conversation not found' },
         { status: 404 }
       );
     }
@@ -129,7 +129,7 @@ export async function PATCH(
   } catch (error) {
     console.error('Erreur lors de la mise à jour de la conversation:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la mise à jour de la conversation' },
+      { error: 'Error updating conversation' },
       { status: 500 }
     );
   }

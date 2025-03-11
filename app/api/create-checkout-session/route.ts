@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     
     if (!session?.user?.email) {
       return NextResponse.json(
-        { error: 'Non authentifié' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
     if (!priceId) {
       return NextResponse.json(
-        { error: 'ID du prix requis' },
+        { error: 'Price ID required' },
         { status: 400 }
       );
     }
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     
     if (!user) {
       return NextResponse.json(
-        { error: 'Utilisateur non trouvé' },
+        { error: 'User not found' },
         { status: 404 }
       );
     }
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ sessionId: checkoutSession.id });
   } catch (error) {
-    console.error('Erreur lors de la création de la session:', error);
+    console.error('Error creating checkout session:', error);
     
     if (error instanceof Stripe.errors.StripeError) {
       return NextResponse.json(
@@ -94,7 +94,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-      { error: 'Erreur lors de la création de la session de paiement' },
+      { error: 'Error creating checkout session' },
       { status: 500 }
     );
   }

@@ -22,7 +22,7 @@ export async function subscriptionMiddleware(request: NextRequest) {
       );
     }
 
-    // Get user from database
+
     await dbConnect();
     const user = await User.findOne({ email: token.email });
     if (!user) {
@@ -32,7 +32,7 @@ export async function subscriptionMiddleware(request: NextRequest) {
       );
     }
 
-    // Check subscription status (except for free plan)
+
     if (user.subscriptionTier !== 'free' && !hasActiveSubscription(user)) {
       return new NextResponse(
         JSON.stringify({ error: 'Subscription expired or inactive' }),
@@ -40,7 +40,7 @@ export async function subscriptionMiddleware(request: NextRequest) {
       );
     }
 
-    // Check daily message limits
+
     if (request.nextUrl.pathname.startsWith('/api/chat')) {
       if (hasReachedDailyMessageLimit(user)) {
         return new NextResponse(
@@ -53,7 +53,7 @@ export async function subscriptionMiddleware(request: NextRequest) {
       }
     }
 
-    // Check active conversations limit
+
     if (request.nextUrl.pathname.startsWith('/api/chat/new')) {
       if (hasReachedActiveConversationsLimit(user)) {
         return new NextResponse(
@@ -66,7 +66,7 @@ export async function subscriptionMiddleware(request: NextRequest) {
       }
     }
 
-    // Check premium feature access
+
     if (request.nextUrl.pathname.startsWith('/api/export')) {
       if (!hasFeatureAccess(user, 'export')) {
         return new NextResponse(

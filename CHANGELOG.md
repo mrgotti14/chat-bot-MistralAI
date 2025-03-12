@@ -2,9 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
 
-## [0.2.0] - 2024-03-XX
+### Added
+- Enhanced Stripe subscription system
+  - Complete webhook system for subscription lifecycle management
+  - Transaction model for payment history tracking
+  - Automatic subscription status updates
+  - Customer creation and management
+  - Secure payment processing with error handling
+  - Support for multiple subscription tiers
+  - Proper error handling and logging
+  - English JSDoc documentation
+
+### Changed
+- Improved error handling in payment processing
+- Enhanced subscription status management
+- Updated webhook handling for better reliability
+- Standardized code documentation to English JSDoc format
+
 
 ### Added
 - Stripe subscription system integration

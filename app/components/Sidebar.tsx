@@ -1,7 +1,7 @@
 'use client';
 
 import { IConversation } from '@/models/Conversation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -63,6 +63,10 @@ export default function Sidebar({
   onDeleteConversation,
   onRenameConversation
 }: SidebarProps) {
+  const { data: session, status } = useSession();
+  console.log('Session data:', session);
+  console.log('Session status:', status);
+  console.log('Subscription tier:', session?.user?.subscriptionTier);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -76,11 +80,11 @@ export default function Sidebar({
 
   const filteredConversations = conversations.filter(conv => {
     const searchLower = searchQuery.toLowerCase();
-    // Search in title
+
     if (conv.title.toLowerCase().includes(searchLower)) {
       return true;
     }
-    // Search in messages content
+
     return conv.messages.some(msg => 
       msg.content.toLowerCase().includes(searchLower)
     );
@@ -286,6 +290,11 @@ export default function Sidebar({
         </div>
 
         <div className="border-t border-white/10 p-3">
+          <div className="mb-2 px-4 py-2 text-sm text-gray-400">
+            Plan actuel : {!session?.user?.subscriptionTier || session.user.subscriptionTier === 'free' ? 'Découverte' : 
+                         session.user.subscriptionTier === 'pro' ? 'Pro' : 
+                         session.user.subscriptionTier === 'business' ? 'Entreprise' : 'Découverte'}
+          </div>
           <button 
             onClick={handleSignOut}
             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg hover:bg-gray-500/10 transition-all duration-200 text-gray-400 hover:text-white"

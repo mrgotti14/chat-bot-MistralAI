@@ -10,7 +10,7 @@ export async function GET() {
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -21,7 +21,7 @@ export async function GET() {
     
     if (!user) {
       return NextResponse.json(
-        { error: 'Utilisateur non trouvé' },
+        { error: 'User not found' },
         { status: 404 }
       );
     }
@@ -33,9 +33,9 @@ export async function GET() {
       hasPassword: !needsPassword
     });
   } catch (error) {
-    console.error('Erreur lors de la vérification du mot de passe:', error);
+    console.error('Error checking password:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la vérification du mot de passe' },
+      { error: 'Error checking password' },
       { status: 500 }
     );
   }

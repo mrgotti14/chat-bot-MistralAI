@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import StripeButton from '../components/StripeButton';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 // Composant MagneticButton
 interface MagneticButtonProps {
@@ -55,6 +55,8 @@ const MagneticButton: React.FC<MagneticButtonProps> = ({ children, className = '
 };
 
 export default function PricingPage() {
+  const [isYearly, setIsYearly] = useState(true);
+
   return (
     <main className="min-h-screen bg-[#1C1D1F] overflow-hidden">
       <Navbar />
@@ -70,9 +72,28 @@ export default function PricingPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Choisissez votre plan
           </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
             Des solutions adaptées à tous vos besoins, de l'utilisation personnelle aux projets d'entreprise
           </p>
+          
+          {/* Billing Switcher */}
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <span className={`text-lg ${!isYearly ? 'text-white' : 'text-gray-400'}`}>Mensuel</span>
+            <button
+              onClick={() => setIsYearly(!isYearly)}
+              className="relative w-16 h-8 rounded-full bg-[#2D2F31] transition-colors"
+            >
+              <div
+                className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-[#A435F0] transition-transform ${
+                  isYearly ? 'translate-x-8' : ''
+                }`}
+              />
+            </button>
+            <div className="flex items-center gap-2">
+              <span className={`text-lg ${isYearly ? 'text-white' : 'text-gray-400'}`}>Annuel</span>
+              <span className="text-sm text-[#A435F0] font-semibold">-20%</span>
+            </div>
+          </div>
         </motion.div>
       </section>
 
@@ -87,53 +108,55 @@ export default function PricingPage() {
                 period: "pour toujours",
                 priceId: null,
                 features: [
-                  "50 messages par jour",
-                  "Support Markdown basique",
-                  "Historique 7 jours",
-                  "Connexion email",
-                  "Interface responsive",
-                  "Modèle Mistral-7B",
+                  "20 messages par jour",
+                  "Accès au modèle Mistral de base",
+                  "Réponses limitées à 300 mots",
+                  "Une seule conversation active",
+                  "Interface standard",
                   "✕ Export des conversations",
-                  "✕ Support prioritaire",
-                  "✕ Personnalisation avancée",
-                  "✕ API dédiée"
+                  "✕ Personnalisation de l'IA",
+                  "✕ Conversations multiples",
+                  "✕ Accès API",
+                  "✕ Support prioritaire"
                 ]
               },
               {
-                plan: "Premium",
-                price: "9.99€",
-                period: "par mois",
-                priceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID,
+                plan: "Pro",
+                monthlyPrice: "9.99€",
+                yearlyPrice: "7.99€",
+                monthlyPriceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID,
+                yearlyPriceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_YEARLY_PRICE_ID,
                 popular: true,
                 features: [
-                  "Messages illimités",
-                  "Support Markdown avancé",
-                  "Historique illimité",
-                  "Multi-authentification",
-                  "Export des données",
-                  "Support prioritaire",
-                  "Modèle Mistral-8x7B",
-                  "Personnalisation avancée",
-                  "✕ API dédiée",
-                  "✕ Déploiement privé"
+                  "150 messages par jour",
+                  "Paramètres optimisés",
+                  "Réponses jusqu'à 1000 mots",
+                  "5 conversations parallèles",
+                  "Personnalisation du ton de l'IA",
+                  "Export PDF/TXT",
+                  "Bibliothèque de prompts",
+                  "Clé API (limite mensuelle)",
+                  "✕ Conversations illimitées",
+                  "✕ Support prioritaire"
                 ]
               },
               {
-                plan: "Business",
-                price: "Sur mesure",
-                period: "contactez-nous",
-                priceId: null,
+                plan: "Entreprise",
+                monthlyPrice: "29.99€",
+                yearlyPrice: "24.99€",
+                monthlyPriceId: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID,
+                yearlyPriceId: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PRICE_ID,
                 features: [
-                  "Tout du plan Premium",
-                  "API dédiée",
-                  "Support 24/7",
-                  "Formation personnalisée",
-                  "Déploiement privé",
-                  "SLA garanti",
-                  "Statistiques avancées",
-                  "Modèles personnalisés",
-                  "Intégration sur mesure",
-                  "Sécurité renforcée"
+                  "Messages illimités",
+                  "Réponses sans limite",
+                  "Conversations illimitées",
+                  "Personnalisation complète",
+                  "Export avancé (PDF, HTML, JSON)",
+                  "Prompts spécialisés par domaine",
+                  "Mode collaboratif",
+                  "Tableau de bord d'analyse",
+                  "API premium illimitée",
+                  "Support prioritaire"
                 ]
               }
             ].map((pricing, index) => (
@@ -154,9 +177,18 @@ export default function PricingPage() {
                   </div>
                 )}
                 <h3 className="text-2xl font-bold text-white mb-4">{pricing.plan}</h3>
-                <div className="flex items-end gap-1 mb-1">
-                  <p className="text-4xl font-bold text-[#A435F0]">{pricing.price}</p>
-                  <p className="text-gray-400 mb-1">{pricing.period}</p>
+                <div className="flex flex-col mb-1">
+                  <div className="flex items-end gap-1">
+                    <p className="text-4xl font-bold text-[#A435F0]">
+                      {pricing.monthlyPrice ? (isYearly ? pricing.yearlyPrice : pricing.monthlyPrice) : pricing.price}
+                    </p>
+                    <p className="text-gray-400 mb-1">
+                      {pricing.monthlyPrice ? (isYearly ? '/mois (facturé annuellement)' : '/mois') : 'pour toujours'}
+                    </p>
+                  </div>
+                  {isYearly && pricing.monthlyPrice && (
+                    <p className="text-sm text-[#A435F0]">Économisez 20% avec l'abonnement annuel</p>
+                  )}
                 </div>
                 <ul className="space-y-3 mb-8 flex-grow">
                   {pricing.features.map((feature, i) => (
@@ -169,14 +201,14 @@ export default function PricingPage() {
                   ))}
                 </ul>
                 <MagneticButton className="w-full mt-auto">
-                  {pricing.priceId ? (
+                  {(pricing.monthlyPriceId || pricing.yearlyPriceId) ? (
                     <StripeButton
-                      priceId={pricing.priceId}
+                      priceId={isYearly ? pricing.yearlyPriceId! : pricing.monthlyPriceId!}
                       className={`w-full px-6 py-3 rounded hover:bg-[#8710E0] transition-colors hover-trigger ${
                         pricing.popular ? 'bg-[#A435F0] text-white' : 'bg-transparent border border-[#A435F0] text-white hover:bg-[#A435F0]/10'
                       }`}
                     >
-                      Commencer
+                      S'abonner
                     </StripeButton>
                   ) : (
                     <button
@@ -184,7 +216,7 @@ export default function PricingPage() {
                         pricing.popular ? 'bg-[#A435F0] text-white' : 'bg-transparent border border-[#A435F0] text-white hover:bg-[#A435F0]/10'
                       }`}
                     >
-                      {pricing.plan === "Business" ? "Contactez-nous" : "Commencer"}
+                      Commencer
                     </button>
                   )}
                 </MagneticButton>
@@ -194,7 +226,6 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FAQ Section réduite */}
       <section className="py-20 bg-[#1C1D1F]">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-8">Vous avez des questions ?</h2>

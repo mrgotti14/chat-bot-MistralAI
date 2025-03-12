@@ -19,6 +19,8 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      subscriptionTier?: string;
+      subscriptionStatus?: string;
     }
   }
 }
@@ -105,20 +107,26 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
+      }
+      if (token.email) {
+        const dbUser = await User.findOne({ email: token.email });
+        if (dbUser) {
+          token.subscriptionTier = dbUser.subscriptionTier || 'free';
+          token.subscriptionStatus = dbUser.subscriptionStatus;
+        }
       }
       return token;
     },
     async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.sub
-        }
-      };
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.subscriptionTier = (token as any).subscriptionTier || 'free';
+        session.user.subscriptionStatus = (token as any).subscriptionStatus;
+      }
+      return session;
     }
   },
   pages: {

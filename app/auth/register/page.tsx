@@ -63,7 +63,7 @@ export default function RegisterPage() {
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+      setError('The passwords do not match');
       setIsLoading(false);
       return;
     }
@@ -78,12 +78,12 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Une erreur est survenue');
+        throw new Error(data.error || 'An error occurred');
       }
 
       router.push('/auth/login');
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Une erreur est survenue');
+      setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }

@@ -68,13 +68,13 @@ export default function AddPassword({ onSuccess }: AddPasswordProps) {
     setIsLoading(true);
 
     if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+      setError('The passwords do not match');
       setIsLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
+      setError('The password must contain at least 6 characters');
       setIsLoading(false);
       return;
     }
@@ -92,7 +92,7 @@ export default function AddPassword({ onSuccess }: AddPasswordProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Une erreur est survenue');
+        throw new Error(data.error || 'An error occurred');
       }
 
       if (data.success) {
@@ -100,11 +100,11 @@ export default function AddPassword({ onSuccess }: AddPasswordProps) {
         setConfirmPassword('');
         onSuccess?.();
       } else {
-        throw new Error(data.error || 'Une erreur est survenue');
+        throw new Error(data.error || 'An error occurred');
       }
     } catch (error) {
-      console.error('Erreur:', error);
-      setError(error instanceof Error ? error.message : 'Une erreur est survenue lors de l\'ajout du mot de passe');
+      console.error('Error:', error);
+      setError(error instanceof Error ? error.message : 'An error occurred while adding the password');
     } finally {
       setIsLoading(false);
     }

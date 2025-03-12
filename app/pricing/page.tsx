@@ -110,7 +110,7 @@ export default function PricingPage() {
                 features: [
                   "20 messages par jour",
                   "Accès au modèle Mistral de base",
-                  "Réponses limitées à 300 mots",
+                  "Réponses jusqu'à 12 000 caractères (~3000 tokens)",
                   "Une seule conversation active",
                   "Interface standard",
                   "✕ Export des conversations",
@@ -130,7 +130,7 @@ export default function PricingPage() {
                 features: [
                   "150 messages par jour",
                   "Paramètres optimisés",
-                  "Réponses jusqu'à 1000 mots",
+                  "Réponses jusqu'à 40 000 caractères (~10 000 tokens)",
                   "5 conversations parallèles",
                   "Personnalisation du ton de l'IA",
                   "Export PDF/TXT",
@@ -148,7 +148,7 @@ export default function PricingPage() {
                 yearlyPriceId: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PRICE_ID,
                 features: [
                   "Messages illimités",
-                  "Réponses sans limite",
+                  "Réponses jusqu'à 100 000 caractères (~25 000 tokens)",
                   "Conversations illimitées",
                   "Personnalisation complète",
                   "Export avancé (PDF, HTML, JSON)",

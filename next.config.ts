@@ -20,9 +20,17 @@ const nextConfig: NextConfig = {
     }
   },
   images: {
-    domains: [
-      'lh3.googleusercontent.com', // For Google avatars
-      'avatars.githubusercontent.com', // For GitHub avatars
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com', // Pour les avatars Google
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com', // Pour les avatars GitHub
+        pathname: '**',
+      },
     ],
   },
 };

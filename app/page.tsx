@@ -76,7 +76,7 @@ export default function Home() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 sm:py-16 overflow-hidden">
         {/* Background Effects */}
         <motion.div 
           animate={{ 
@@ -132,14 +132,14 @@ export default function Home() {
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-8 opacity-20" />
 
         {/* Content */}
-        <div className="relative z-10 max-w-5xl mx-auto text-center">
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="space-y-8"
+            className="space-y-4 sm:space-y-6 md:space-y-8"
           >
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight relative">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight relative">
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -199,7 +199,7 @@ export default function Home() {
             </h1>
 
             <motion.p 
-              className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto"
+              className="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ 

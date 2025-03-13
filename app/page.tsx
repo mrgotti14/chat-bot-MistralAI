@@ -514,7 +514,7 @@ export default function Home() {
                 transition={{ delay: index * 0.1 }}
                 className="group relative bg-[#2D2F31] p-8 rounded-2xl hover:bg-[#3E4143] transition-all duration-300 hover-trigger"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#A435F0]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#A435F0]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
                 <div className="relative z-10">
                   <div className="w-14 h-14 bg-[#A435F0]/10 rounded-xl flex items-center justify-center text-[#A435F0] mb-6 group-hover:scale-110 transition-transform duration-300">
                     {feature.icon}

@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import MarkdownRenderer from './MarkdownRenderer';
-import  { type IConversation, type IMessage } from '@/models/Conversation';
+import { type IConversation, type IMessage } from '@/models/Conversation';
+import { useUsageLimits } from '../hooks/useUsageLimits';
 
 /**
  * Props for the Chat component
@@ -63,7 +64,9 @@ export default function Chat({
   const [message, setMessage] = useState('');
   const [pendingMessage, setPendingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { usageLimits, refresh: refreshUsage } = useUsageLimits();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -81,6 +84,7 @@ export default function Chat({
     e.preventDefault();
     if (!message.trim()) return;
 
+    setError(null);
     const messageToSend = message.trim();
     setPendingMessage(messageToSend);
     setMessage('');
@@ -102,18 +106,24 @@ export default function Chat({
         })
       });
 
-      if (!response.ok) throw new Error('Error sending message');
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erreur lors de l\'envoi du message');
+      }
       
       const data = await response.json();
       
-     
       if (!currentConversationId && data.conversationId) {
         onSelectConversation(data.conversationId);
       }
       
       await onConversationUpdate();
-    } catch (error) {
-      console.error('Erreur:', error);
+      await refreshUsage();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      console.error('Erreur:', err);
+      // Restaurer le message si l'envoi a échoué
+      setMessage(messageToSend);
     } finally {
       setIsLoading(false);
       setPendingMessage('');
@@ -130,6 +140,35 @@ export default function Chat({
 
   return (
     <div className="relative flex flex-col h-full bg-[#1C1D1F]">
+      {usageLimits && (
+        <div className="absolute top-0 right-0 m-4 p-2 bg-[#2D2F31] rounded-lg text-sm text-gray-300 z-10">
+          <div className="flex flex-col space-y-1">
+            <div className="flex items-center space-x-2">
+              <span>Messages restants aujourd'hui :</span>
+              <span className="font-medium text-[#A435F0]">
+                {usageLimits.limits.remaining.dailyMessages}
+              </span>
+              <span>/</span>
+              <span>{usageLimits.limits.dailyMessageLimit}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span>Conversations actives :</span>
+              <span className="font-medium text-[#A435F0]">
+                {usageLimits.usage.activeConversations}
+              </span>
+              <span>/</span>
+              <span>{usageLimits.limits.maxActiveConversations}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="absolute top-16 right-0 m-4 p-2 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400 z-10">
+          {error}
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto custom-scrollbar pb-36">
         {(!currentConversationId || conversations.length === 0) && (
           <motion.div 

@@ -76,7 +76,7 @@ export default function Home() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 sm:py-16 overflow-hidden">
         {/* Background Effects */}
         <motion.div 
           animate={{ 
@@ -132,14 +132,14 @@ export default function Home() {
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-8 opacity-20" />
 
         {/* Content */}
-        <div className="relative z-10 max-w-5xl mx-auto text-center">
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="space-y-8"
+            className="space-y-4 sm:space-y-6 md:space-y-8"
           >
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight relative">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight relative">
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -199,7 +199,7 @@ export default function Home() {
             </h1>
 
             <motion.p 
-              className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto"
+              className="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ 
@@ -514,7 +514,7 @@ export default function Home() {
                 transition={{ delay: index * 0.1 }}
                 className="group relative bg-[#2D2F31] p-8 rounded-2xl hover:bg-[#3E4143] transition-all duration-300 hover-trigger"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#A435F0]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#A435F0]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
                 <div className="relative z-10">
                   <div className="w-14 h-14 bg-[#A435F0]/10 rounded-xl flex items-center justify-center text-[#A435F0] mb-6 group-hover:scale-110 transition-transform duration-300">
                     {feature.icon}
@@ -568,7 +568,7 @@ export default function Home() {
                 features: [
                   "20 messages par jour",
                   "Accès au modèle Mistral de base",
-                  "Réponses limitées à 300 mots",
+                  "Réponses jusqu'à 12 000 caractères (~3000 tokens)",
                   "Une seule conversation active",
                   "Interface standard",
                   "✕ Export des conversations",
@@ -588,7 +588,7 @@ export default function Home() {
                 features: [
                   "150 messages par jour",
                   "Paramètres optimisés",
-                  "Réponses jusqu'à 1000 mots",
+                  "Réponses jusqu'à 40 000 caractères (~10 000 tokens)",
                   "5 conversations parallèles",
                   "Personnalisation du ton de l'IA",
                   "Export PDF/TXT",
@@ -606,7 +606,7 @@ export default function Home() {
                 yearlyPriceId: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PRICE_ID,
                 features: [
                   "Messages illimités",
-                  "Réponses sans limite",
+                  "Réponses jusqu'à 100 000 caractères (~25 000 tokens)",
                   "Conversations illimitées",
                   "Personnalisation complète",
                   "Export avancé (PDF, HTML, JSON)",

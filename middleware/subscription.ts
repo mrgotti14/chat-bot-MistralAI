@@ -9,7 +9,7 @@ import {
   hasFeatureAccess,
   hasActiveSubscription,
   getCurrentPlanLimits
-} from '@/lib/subscription-utils';
+} from '@/app/lib/subscription-utils';
 
 export async function subscriptionMiddleware(request: NextRequest) {
   try {
@@ -41,24 +41,23 @@ export async function subscriptionMiddleware(request: NextRequest) {
     }
 
 
-    if (request.nextUrl.pathname.startsWith('/api/chat')) {
-      if (hasReachedDailyMessageLimit(user)) {
+    if (request.nextUrl.pathname.includes('/api/chat')) {
+      // Vérifier d'abord si c'est une nouvelle conversation
+      if (request.nextUrl.pathname.endsWith('/new') && hasReachedActiveConversationsLimit(user)) {
         return new NextResponse(
           JSON.stringify({ 
-            error: 'Daily message limit reached',
+            error: 'Active conversations limit reached',
             limits: getCurrentPlanLimits(user)
           }),
           { status: 429 }
         );
       }
-    }
 
-
-    if (request.nextUrl.pathname.startsWith('/api/chat/new')) {
-      if (hasReachedActiveConversationsLimit(user)) {
+      // Ensuite vérifier la limite de messages quotidiens
+      if (hasReachedDailyMessageLimit(user)) {
         return new NextResponse(
           JSON.stringify({ 
-            error: 'Active conversations limit reached',
+            error: 'Daily message limit reached',
             limits: getCurrentPlanLimits(user)
           }),
           { status: 429 }

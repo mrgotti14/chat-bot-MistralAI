@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import dbConnect from '@/lib/mongoose';
 import Conversation from '@/models/Conversation';
+import User from '@/models/User';
 import { authOptions } from '../../auth/[...nextauth]/auth-options';
 
 type Props = {
@@ -62,6 +63,16 @@ export async function DELETE(
     }
 
     await dbConnect();
+    
+    // Get user first to update conversation count
+    const user = await User.findById(session.user.id);
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
     const conversation = await Conversation.findOneAndDelete({
       _id: id,
       userId: session.user.id
@@ -72,6 +83,12 @@ export async function DELETE(
         { error: 'Conversation not found' },
         { status: 404 }
       );
+    }
+
+    // Decrement active conversations count
+    if (user.activeConversations && user.activeConversations > 0) {
+      user.activeConversations--;
+      await user.save();
     }
 
     return NextResponse.json({ message: 'Conversation deleted successfully' });

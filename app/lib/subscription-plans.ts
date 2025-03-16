@@ -4,7 +4,7 @@ export const SUBSCRIPTION_PLANS = {
     tier: 'free',
     limits: {
       messagesPerDay: 20,
-      maxResponseLength: 12000,  // ~3000 tokens - permet une histoire complète
+      maxResponseLength: 12000,  // ~3000 tokens - allows for a complete story
       maxActiveConversations: 1,
       features: {
         export: false,
@@ -19,7 +19,7 @@ export const SUBSCRIPTION_PLANS = {
     tier: 'pro',
     limits: {
       messagesPerDay: 150,
-      maxResponseLength: 40000,  // ~10000 tokens - histoires très détaillées
+      maxResponseLength: 40000,  // ~10000 tokens - detailed stories
       maxActiveConversations: 5,
       features: {
         export: true,
@@ -37,7 +37,7 @@ export const SUBSCRIPTION_PLANS = {
     tier: 'business',
     limits: {
       messagesPerDay: -1, // unlimited
-      maxResponseLength: 100000, // ~25000 tokens - quasi illimité
+      maxResponseLength: 100000, // ~25000 tokens - virtually unlimited
       maxActiveConversations: -1, // unlimited
       features: {
         export: true,

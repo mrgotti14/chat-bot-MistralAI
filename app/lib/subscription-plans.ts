@@ -3,9 +3,9 @@ export const SUBSCRIPTION_PLANS = {
     name: 'Découverte',
     tier: 'free',
     limits: {
-      messagesPerDay: 20,
-      maxResponseLength: 12000,  // ~3000 tokens - permet une histoire complète
-      maxActiveConversations: 1,
+      messagesPerDay: parseInt(process.env.DEFAULT_DAILY_MESSAGE_LIMIT || '20'),
+      maxResponseLength: 12000,  // ~3000 tokens - allows for a complete story
+      maxActiveConversations: parseInt(process.env.DEFAULT_MAX_ACTIVE_CONVERSATIONS || '1'),
       features: {
         export: false,
         customization: false,
@@ -18,9 +18,9 @@ export const SUBSCRIPTION_PLANS = {
     name: 'Pro',
     tier: 'pro',
     limits: {
-      messagesPerDay: 150,
-      maxResponseLength: 40000,  // ~10000 tokens - histoires très détaillées
-      maxActiveConversations: 5,
+      messagesPerDay: parseInt(process.env.PRO_DAILY_MESSAGE_LIMIT || '150'),
+      maxResponseLength: 40000,  // ~10000 tokens - detailed stories
+      maxActiveConversations: parseInt(process.env.PRO_MAX_ACTIVE_CONVERSATIONS || '5'),
       features: {
         export: true,
         customization: true,
@@ -36,9 +36,9 @@ export const SUBSCRIPTION_PLANS = {
     name: 'Entreprise',
     tier: 'business',
     limits: {
-      messagesPerDay: -1, // unlimited
-      maxResponseLength: 100000, // ~25000 tokens - quasi illimité
-      maxActiveConversations: -1, // unlimited
+      messagesPerDay: parseInt(process.env.BUSINESS_DAILY_MESSAGE_LIMIT || '-1'), // unlimited
+      maxResponseLength: 100000, // ~25000 tokens - virtually unlimited
+      maxActiveConversations: parseInt(process.env.BUSINESS_MAX_ACTIVE_CONVERSATIONS || '-1'), // unlimited
       features: {
         export: true,
         customization: true,

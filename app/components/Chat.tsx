@@ -25,6 +25,11 @@ interface ChatProps {
 }
 
 /**
+ * Type for available model providers
+ */
+type ModelProvider = 'mistral' | 'ollama';
+
+/**
  * Main chat interface with message history and input form
  * 
  * @component
@@ -38,6 +43,7 @@ interface ChatProps {
  * - Auto-scroll to new messages
  * - Responsive interface with textarea handling
  * - Typing and sending indicators
+ * - Model selection between Mistral API and Ollama
  * 
  * Special behaviors:
  * - Textarea auto-adjusts to content height
@@ -65,8 +71,19 @@ export default function Chat({
   const [pendingMessage, setPendingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modelProvider, setModelProvider] = useState<ModelProvider>('mistral');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { usageLimits, refresh: refreshUsage } = useUsageLimits();
+
+  // Check if user has access to premium models (Pro or Business tier)
+  const hasPremiumAccess = usageLimits?.tier === 'pro' || usageLimits?.tier === 'business';
+
+  // Reset to Mistral API if user doesn't have premium access but had selected Ollama
+  useEffect(() => {
+    if (!hasPremiumAccess && modelProvider === 'ollama') {
+      setModelProvider('mistral');
+    }
+  }, [hasPremiumAccess, modelProvider]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -102,7 +119,8 @@ export default function Chat({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           message: messageToSend,
-          conversationId: currentConversationId 
+          conversationId: currentConversationId,
+          modelProvider
         })
       });
 
@@ -122,7 +140,7 @@ export default function Chat({
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
       console.error('Erreur:', err);
-      // Restaurer le message si l'envoi a échoué
+      // Restore the message if sending failed
       setMessage(messageToSend);
     } finally {
       setIsLoading(false);
@@ -312,13 +330,45 @@ export default function Chat({
               </motion.div>
             </>
           )}
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} className="h-16 mb-8" />
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0">
         <div className="bg-gradient-to-t from-[#1C1D1F] via-[#1C1D1F]/90 to-transparent h-12" />
         <div className="bg-[#1C1D1F]">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+            {hasPremiumAccess ? (
+              <div className="flex justify-center mb-2">
+                <div className="inline-flex bg-[#2D2F31] rounded-lg p-1">
+                  <button
+                    onClick={() => setModelProvider('mistral')}
+                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                      modelProvider === 'mistral' 
+                        ? 'bg-[#A435F0] text-white' 
+                        : 'text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    Mistral API
+                  </button>
+                  <button
+                    onClick={() => setModelProvider('ollama')}
+                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                      modelProvider === 'ollama' 
+                        ? 'bg-[#A435F0] text-white' 
+                        : 'text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    Mistral 7B (Ollama)
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center mb-2">
+                <span className="text-xs text-gray-400">
+                  Passez à un abonnement Pro ou Entreprise pour accéder au modèle Mistral 7B (Ollama)
+                </span>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="relative">
               <div className="flex items-end">
                 <div className="relative flex-1">

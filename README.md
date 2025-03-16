@@ -162,7 +162,6 @@ GITHUB_SECRET=your_github_client_secret
 STRIPE_SECRET_KEY=your_stripe_secret_key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID=your_stripe_price_id
-NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 > Note: The default MongoDB URI uses the credentials defined in the `docker-compose.yml` file. If you modified the credentials there, make sure to update the URI accordingly.

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import dbConnect from '@/lib/mongoose';
+import dbConnect from '@/app/lib/mongoose';
 import Conversation from '@/models/Conversation';
 import User from '@/models/User';
 import { 
@@ -12,8 +12,8 @@ import {
 import { getSubscriptionPlan, SUBSCRIPTION_PLANS } from '@/app/lib/subscription-plans';
 import { authOptions } from '../auth/[...nextauth]/auth-options';
 
-if (!process.env.MISTRAL_API_KEY) {
-  throw new Error('Missing Mistral API key');
+if (!process.env.MISTRAL_API_KEY && !process.env.OLLAMA_API_URL) {
+  throw new Error('Missing API configuration: either MISTRAL_API_KEY or OLLAMA_API_URL must be set');
 }
 
 /**
@@ -25,6 +25,7 @@ if (!process.env.MISTRAL_API_KEY) {
  * {
  *   "message": "User's message",
  *   "conversationId": "existing-id" // Optional
+ *   "modelProvider": "mistral" | "ollama" // Optional, defaults to "mistral"
  * }
  * ```
  * 
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { message, conversationId: existingConversationId } = await request.json();
+    const { message, conversationId: existingConversationId, modelProvider = 'mistral' } = await request.json();
 
     if (!message || typeof message !== 'string' || message.trim() === '') {
       return NextResponse.json(
@@ -87,6 +88,26 @@ export async function POST(request: Request) {
       );
     }
 
+    /**
+     * Check if user has access to premium models (Ollama)
+     * Only Pro and Business tiers can use Ollama
+     */
+    const userTier = user.subscriptionTier || 'free';
+    const hasPremiumAccess = userTier === 'pro' || userTier === 'business';
+    
+    // Force using Mistral API if user doesn't have premium access
+    const finalModelProvider = (!hasPremiumAccess && modelProvider === 'ollama') 
+      ? 'mistral' 
+      : modelProvider;
+    
+    // If user tried to use Ollama without permission, return an error
+    if (modelProvider === 'ollama' && !hasPremiumAccess) {
+      return NextResponse.json(
+        { error: 'Premium model access requires Pro or Business subscription' },
+        { status: 403 }
+      );
+    }
+
     const userMessage = {
       role: 'user',
       content: message.trim(),
@@ -96,19 +117,19 @@ export async function POST(request: Request) {
     /**
      * Get response length limit based on user's subscription plan
      */
-    const plan = getSubscriptionPlan(user.subscriptionTier || 'free');
+    const plan = getSubscriptionPlan(userTier);
     const maxLength = plan.limits.maxResponseLength;
     
     // Debug log for monitoring
-    console.log(`Plan: ${plan.name}, Tier: ${user.subscriptionTier || 'free'}, MaxLength: ${maxLength}`);
+    console.log(`Plan: ${plan.name}, Tier: ${userTier}, MaxLength: ${maxLength}, Provider: ${finalModelProvider}`);
 
     /**
      * System message to enforce response length limits
      * Instructs the AI to provide concise responses within character limits
      */
     const systemMessage = maxLength > 0 
-      ? `You are an AI assistant that must strictly respect a ${maxLength} character limit per response. If you cannot provide a complete answer within this limit, give a concise response and suggest the user to ask a more specific question. Do not mention this limit in your responses unless explicitly asked.`
-      : undefined;
+      ? `You are an AI assistant that must strictly respect a ${maxLength} character limit per response. If you cannot provide a complete answer within this limit, give a concise response and suggest the user to ask a more specific question. Do not mention this limit in your responses unless explicitly asked. IMPORTANT: Always respond in French.`
+      : `You are an AI assistant. IMPORTANT: Always respond in French.`;
 
     /**
      * Gets AI response with retry mechanism for length compliance
@@ -118,49 +139,129 @@ export async function POST(request: Request) {
      */
     async function getAIResponse(currentMessage: string, retryCount = 0): Promise<string> {
       if (retryCount >= 3) {
-        return `I need to provide a shorter response. Could you rephrase your question more specifically?`;
+        return `Je dois fournir une réponse plus courte. Pourriez-vous reformuler votre question de manière plus spécifique ?`;
       }
 
-
-      const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.MISTRAL_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'mistral-tiny',
-          messages: [
-            ...(systemMessage ? [{ role: 'system', content: systemMessage }] : []),
-            { role: 'user', content: currentMessage }
-          ],
-          temperature: 0.7,
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Mistral API Error:', errorData);
-        throw new Error(`Mistral API Error: ${errorData.error?.message || 'Unknown error'}`);
+      // Retrieve message history for existing conversations
+      let messageHistory: Array<{role: string, content: string}> = [];
+      if (existingConversationId) {
+        try {
+          const conversation = await Conversation.findOne({
+            _id: existingConversationId,
+            userId: session?.user?.id
+          });
+          
+          if (conversation) {
+            // Convert conversation messages to the format expected by the API
+            messageHistory = conversation.messages.map((msg: any) => ({
+              role: msg.role as string,
+              content: msg.content as string
+            }));
+          }
+        } catch (err) {
+          console.error('Error fetching conversation history:', err);
+        }
       }
 
-      const data = await response.json();
-      const content = data.choices?.[0]?.message?.content?.trim();
+      // Add current message to history
+      const finalMessages = [
+        ...(systemMessage ? [{ role: 'system', content: systemMessage }] : []),
+        ...messageHistory,
+        { role: 'user', content: `${currentMessage}\n\nIMPORTANT: Réponds toujours en français.` }
+      ];
 
-      if (!content) {
-        throw new Error('Invalid response from Mistral API');
+      // Use Ollama if specified
+      if (finalModelProvider === 'ollama') {
+        if (!process.env.OLLAMA_API_URL) {
+          throw new Error('Ollama API URL not configured');
+        }
+
+        const ollamaModel = process.env.OLLAMA_MODEL || 'mistral';
+        const ollamaUrl = `${process.env.OLLAMA_API_URL}/api/chat`;
+        
+        try {
+          const response = await fetch(ollamaUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: ollamaModel,
+              messages: finalMessages,
+              stream: false
+            })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Ollama API Error:', errorData);
+            throw new Error(`Ollama API Error: ${errorData.error || 'Unknown error'}`);
+          }
+
+          const data = await response.json();
+          const content = data.message?.content?.trim();
+
+          if (!content) {
+            throw new Error('Invalid response from Ollama API');
+          }
+
+          /**
+           * Retry with stricter instructions if response exceeds length limit
+           */
+          if (maxLength > 0 && content.length > maxLength) {
+            console.log(`Response too long (${content.length} chars), retrying...`);
+            const updatedMessage = `${currentMessage}\n\nNOTE: Your last response was ${content.length} characters. It MUST be less than ${maxLength} characters.`;
+            return getAIResponse(updatedMessage, retryCount + 1);
+          }
+
+          return content;
+        } catch (error: any) {
+          console.error('Ollama API Error:', error);
+          throw new Error(`Failed to get response from Ollama: ${error.message}`);
+        }
+      } else {
+        // Use Mistral API by default
+        if (!process.env.MISTRAL_API_KEY) {
+          throw new Error('Mistral API key not configured');
+        }
+
+        const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.MISTRAL_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: 'mistral-tiny',
+            messages: finalMessages,
+            temperature: 0.7,
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Mistral API Error:', errorData);
+          throw new Error(`Mistral API Error: ${errorData.error?.message || 'Unknown error'}`);
+        }
+
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content?.trim();
+
+        if (!content) {
+          throw new Error('Invalid response from Mistral API');
+        }
+
+        /**
+         * Retry with stricter instructions if response exceeds length limit
+         */
+        if (maxLength > 0 && content.length > maxLength) {
+          console.log(`Response too long (${content.length} chars), retrying...`);
+          const updatedMessage = `${currentMessage}\n\nNOTE: Your last response was ${content.length} characters. It MUST be less than ${maxLength} characters.`;
+          return getAIResponse(updatedMessage, retryCount + 1);
+        }
+
+        return content;
       }
-
-      /**
-       * Retry with stricter instructions if response exceeds length limit
-       */
-      if (maxLength > 0 && content.length > maxLength) {
-        console.log(`Response too long (${content.length} chars), retrying...`);
-        const updatedMessage = `${currentMessage}\n\nNOTE: Your last response was ${content.length} characters. It MUST be less than ${maxLength} characters.`;
-        return getAIResponse(updatedMessage, retryCount + 1);
-      }
-
-      return content;
     }
 
     const aiResponse = await getAIResponse(message.trim());
@@ -207,7 +308,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       response: assistantMessage.content,
-      conversationId: resultConversationId
+      conversationId: resultConversationId,
+      modelProvider: finalModelProvider
     });
   } catch (error) {
     console.error('Chat error:', error);

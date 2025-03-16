@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import dbConnect from '@/lib/mongoose';
+import dbConnect from '@/app/lib/mongoose';
 import User from '@/models/User';
 import { 
   hasReachedDailyMessageLimit, 
@@ -42,7 +42,7 @@ export async function subscriptionMiddleware(request: NextRequest) {
 
 
     if (request.nextUrl.pathname.includes('/api/chat')) {
-      // Vérifier d'abord si c'est une nouvelle conversation
+      // Check if it's a new conversation first
       if (request.nextUrl.pathname.endsWith('/new') && hasReachedActiveConversationsLimit(user)) {
         return new NextResponse(
           JSON.stringify({ 
@@ -53,7 +53,7 @@ export async function subscriptionMiddleware(request: NextRequest) {
         );
       }
 
-      // Ensuite vérifier la limite de messages quotidiens
+      // Then check daily message limit
       if (hasReachedDailyMessageLimit(user)) {
         return new NextResponse(
           JSON.stringify({ 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import dbConnect from '@/lib/mongoose';
+import dbConnect from '@/app/lib/mongoose';
 import User from '@/models/User';
 import { getCurrentPlanLimits } from '@/app/lib/subscription-utils';
 import { authOptions } from '../../auth/[...nextauth]/auth-options';

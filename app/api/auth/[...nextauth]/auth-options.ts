@@ -4,8 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
-import { clientPromise } from "@/lib/mongoose";
-import dbConnect from "@/lib/mongoose";
+import { clientPromise } from "@/app/lib/mongoose";
+import dbConnect from "@/app/lib/mongoose";
 import User from "@/models/User";
 
 /**

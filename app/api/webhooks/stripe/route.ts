@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import User from '@/models/User';
 import Transaction from '@/models/Transaction';
-import dbConnect from '@/lib/mongoose';
+import dbConnect from '@/app/lib/mongoose';
 
 /**
  * Initialize Stripe with the secret key

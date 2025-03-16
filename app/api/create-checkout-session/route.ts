@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/auth-options';
 import User from '@/models/User';
-import dbConnect from '@/lib/mongoose';
+import dbConnect from '@/app/lib/mongoose';
 
 /**
  * Initialize Stripe instance with secret key
@@ -75,8 +75,8 @@ export async function POST(req: Request) {
         },
       ],
       mode: 'subscription',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+      success_url: `${process.env.NEXTAUTH_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXTAUTH_URL}/pricing`,
       metadata: {
         userId: user._id.toString(),
       },

@@ -23,12 +23,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'lh3.googleusercontent.com', // Pour les avatars Google
+        hostname: 'lh3.googleusercontent.com',
         pathname: '**',
       },
       {
         protocol: 'https',
-        hostname: 'avatars.githubusercontent.com', // Pour les avatars GitHub
+        hostname: 'avatars.githubusercontent.com',
         pathname: '**',
       },
     ],

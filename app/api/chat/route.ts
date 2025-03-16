@@ -88,6 +88,26 @@ export async function POST(request: Request) {
       );
     }
 
+    /**
+     * Check if user has access to premium models (Ollama)
+     * Only Pro and Business tiers can use Ollama
+     */
+    const userTier = user.subscriptionTier || 'free';
+    const hasPremiumAccess = userTier === 'pro' || userTier === 'business';
+    
+    // Force using Mistral API if user doesn't have premium access
+    const finalModelProvider = (!hasPremiumAccess && modelProvider === 'ollama') 
+      ? 'mistral' 
+      : modelProvider;
+    
+    // If user tried to use Ollama without permission, return an error
+    if (modelProvider === 'ollama' && !hasPremiumAccess) {
+      return NextResponse.json(
+        { error: 'Premium model access requires Pro or Business subscription' },
+        { status: 403 }
+      );
+    }
+
     const userMessage = {
       role: 'user',
       content: message.trim(),
@@ -97,11 +117,11 @@ export async function POST(request: Request) {
     /**
      * Get response length limit based on user's subscription plan
      */
-    const plan = getSubscriptionPlan(user.subscriptionTier || 'free');
+    const plan = getSubscriptionPlan(userTier);
     const maxLength = plan.limits.maxResponseLength;
     
     // Debug log for monitoring
-    console.log(`Plan: ${plan.name}, Tier: ${user.subscriptionTier || 'free'}, MaxLength: ${maxLength}, Provider: ${modelProvider}`);
+    console.log(`Plan: ${plan.name}, Tier: ${userTier}, MaxLength: ${maxLength}, Provider: ${finalModelProvider}`);
 
     /**
      * System message to enforce response length limits
@@ -151,7 +171,7 @@ export async function POST(request: Request) {
       ];
 
       // Use Ollama if specified
-      if (modelProvider === 'ollama') {
+      if (finalModelProvider === 'ollama') {
         if (!process.env.OLLAMA_API_URL) {
           throw new Error('Ollama API URL not configured');
         }
@@ -289,7 +309,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       response: assistantMessage.content,
       conversationId: resultConversationId,
-      modelProvider
+      modelProvider: finalModelProvider
     });
   } catch (error) {
     console.error('Chat error:', error);

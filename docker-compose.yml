@@ -27,5 +27,22 @@ services:
     depends_on:
       - mongodb
 
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: chat-mistral-n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - mongodb
+
 volumes:
-  mongodb_data: 
+  mongodb_data:
+  n8n_data:
